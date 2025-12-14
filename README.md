@@ -1,2 +1,2 @@
 # Mmvlm4SCD
-Multimodal Model Analyzing For Sickle Cell Desease
+Multimodal AI Model Analyzing For Sickle Cell Desease
