@@ -25,7 +25,7 @@ pip install -e .
 # Run training
 python src/scripts/train.py --config configs/default.yaml
 
-## Structure  
+# Structure  
 Mmvlm4SCD/
 │
 ├── .github/
