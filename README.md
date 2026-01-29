@@ -1,5 +1,5 @@
 # Mmvlm4SCD
-Multimodal AI Model Analyzing For Sickle Cell Desease............
+
 # MMultimodal AI Model for Sickle Cell Disease (Mmvlm4SCD)
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
