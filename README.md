@@ -6,7 +6,7 @@
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
      
 A multimodal deep learning framework for comprehensive analysis of Sickle Cell Disease using clinical, genomic, imaging, and temporal data.
-      
+        
 ## Features
 - **Multimodal Fusion**: Advanced fusion techniques for heterogeneous data types
 - **Interpretability**: Built-in model interpretation and visualization tools
