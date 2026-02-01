@@ -1,5 +1,5 @@
 # Mmvlm4SCD    
-                     
+                        
 # MMultimodal AI Model for Sickle Cell Disease 
     
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
