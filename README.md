@@ -13,6 +13,10 @@ A multimodal deep learning framework for comprehensive analysis of Sickle Cell D
 - **Scalable**: Support for distributed training and inference
 - **Clinical Focus**: Domain-specific preprocessing and evaluation metrics
 
+## Documentation
+- Structured algorithms and tagging guidance: `docs/sickle_cell_device_anemia_algorithms.md`
+- West Africa dataset tagging placeholders: `data/datasets/west_africa_recent.yaml`
+
 ## Quick Start   
 ```bash   
 # Clone repository

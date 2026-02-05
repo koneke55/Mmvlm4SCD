@@ -1,0 +1,28 @@
+# Dataset tagging placeholders for West Africa SCD datasets.
+# Replace EXAMPLE entries with verified datasets and sources.
+
+- dataset_id: example-west-africa-scd-1
+  title: "EXAMPLE: West Africa SCD Cohort"
+  countries: ["Ghana", "Nigeria"]
+  region: "West Africa"
+  years_covered: [2020, 2024]
+  recency_tag: "recent"
+  modalities: ["clinical", "lab", "telemetry"]
+  access: "application_required"
+  source_url: "https://example.org/dataset"
+  verification_status: "unverified"
+  last_verified: null
+  notes: "Replace with verified dataset source."
+
+- dataset_id: example-west-africa-scd-2
+  title: "EXAMPLE: SCD Imaging Registry"
+  countries: ["Senegal"]
+  region: "West Africa"
+  years_covered: [2019, 2023]
+  recency_tag: "recent"
+  modalities: ["imaging"]
+  access: "restricted"
+  source_url: "https://example.org/dataset"
+  verification_status: "unverified"
+  last_verified: null
+  notes: "Replace with verified dataset source."
