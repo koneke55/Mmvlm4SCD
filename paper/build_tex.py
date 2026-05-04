@@ -264,6 +264,15 @@ def build():
                           "subgroups" / "subgroups.json")
     brier = _safe_load(ROOT / "experiments" / "results" /
                        "survival_horizons" / "brier.json")
+    cdir = ROOT / "experiments" / "results" / "mmvlm4scd_default" / "clinical"
+    clinical = _safe_load(cdir / "clinical_summary.json")
+    pc_auroc = _safe_load(cdir / "per_class_auroc.json")
+    dca = _safe_load(cdir / "decision_curve.json")
+    sens_spec = _safe_load(cdir / "sens_spec.json")
+    cal_err = _safe_load(cdir / "calibration_error.json")
+    robust = _safe_load(cdir / "robustness.json")
+    fairness = _safe_load(cdir / "fairness_gap.json")
+    external = _safe_load(cdir / "external_cohort.json")
 
     aurocs = [r["auroc_ovr"] for r in summary["test_per_seed"]]
     accs = [r["accuracy"] for r in summary["test_per_seed"]]
@@ -667,6 +676,130 @@ def build():
         a(r"\caption{Subgroup AUROC (left) and C-index (right). Dashed "
           r"vertical lines mark the overall test-set value."
           r"}\label{fig:sg}\end{figure}")
+
+    # 4.x Clinical utility, robustness, external validity --------------
+    if clinical is not None:
+        a(r"\subsection{Clinical utility and calibration}")
+        if pc_auroc is not None:
+            a(r"\subsubsection{Per-class one-vs-rest AUROC}")
+            a("Per-class one-vs-rest AUROC localises the model's ranking "
+              "ability for each severity tier "
+              "(Table~\\ref{tab:pcauroc}, Fig.~\\ref{fig:pcroc}).")
+            a(r"\begin{table}[t]\centering")
+            a(r"\caption{Per-class one-vs-rest AUROC.}\label{tab:pcauroc}")
+            a(r"\small\begin{tabular}{lc}")
+            a(r"\toprule Class & AUROC \\\midrule")
+            for k in ("auroc_class0", "auroc_class1", "auroc_class2"):
+                if k in pc_auroc:
+                    label = {"auroc_class0": "mild",
+                             "auroc_class1": "moderate",
+                             "auroc_class2": "severe"}[k]
+                    a(f"{label} & {pc_auroc[k]:.3f} \\\\")
+            a(r"\bottomrule\end{tabular}\end{table}")
+            a(r"\begin{figure}[t]\centering")
+            a(r"\includegraphics[width=0.6\linewidth]"
+              r"{../experiments/results/mmvlm4scd_default/clinical/figures/"
+              r"per_class_roc.png}")
+            a(r"\caption{Per-class one-vs-rest ROC curves on the held-out "
+              r"test set.}\label{fig:pcroc}\end{figure}")
+
+        if cal_err is not None:
+            a(r"\subsubsection{Calibration error}")
+            a("Top-class probability calibration over 10 equal-width bins "
+              f"yields ECE = {cal_err['ece']:.3f} and "
+              f"MCE = {cal_err['mce']:.3f}; the corresponding reliability "
+              "diagram is shown in Fig.~\\ref{fig:cal}.")
+
+        if dca is not None and sens_spec is not None:
+            a(r"\subsubsection{Decision-curve analysis}")
+            a(r"For the binary `severe vs not severe' framing "
+              f"(prevalence = {dca['prevalence']:.2f}) we compare the "
+              "model's net benefit against `treat all' and `treat none' "
+              "policies (Fig.~\\ref{fig:dca}). Sensitivity, specificity, "
+              "PPV and NPV at three operating points are reported in "
+              "Table~\\ref{tab:opp}.")
+            a(r"\begin{figure}[t]\centering")
+            a(r"\includegraphics[width=0.6\linewidth]"
+              r"{../experiments/results/mmvlm4scd_default/clinical/figures/"
+              r"decision_curve.png}")
+            a(r"\caption{Decision-curve analysis (Vickers \& Elkin)."
+              r"}\label{fig:dca}\end{figure}")
+            a(r"\begin{table}[t]\centering")
+            a(r"\caption{Sensitivity, specificity, PPV and NPV at three "
+              r"operating thresholds for predicting severe disease."
+              r"}\label{tab:opp}")
+            a(r"\small\begin{tabular}{lcccc}")
+            a(r"\toprule Threshold & Sens & Spec & PPV & NPV \\\midrule")
+            for tlabel, m in sens_spec.items():
+                a(f"{_esc(tlabel)} & {m['sensitivity']:.3f} & "
+                  f"{m['specificity']:.3f} & {m['ppv']:.3f} & "
+                  f"{m['npv']:.3f} \\\\")
+            a(r"\bottomrule\end{tabular}\end{table}")
+
+    if robust is not None:
+        a(r"\subsection{Robustness to missing modalities}")
+        a("We zero out each modality at test time with probability "
+          f"$p\\in\\{{0,0.1,0.25,0.5\\}}$ over 3 repeats "
+          "(Table~\\ref{tab:robust}, Fig.~\\ref{fig:robust}); this "
+          "approximates the missing-at-random behaviour of real EHR "
+          "data.")
+        a(r"\begin{table}[t]\centering")
+        a(r"\caption{Test metrics under random per-sample modality "
+          r"dropout (3 repeats per $p$).}\label{tab:robust}")
+        a(r"\small\begin{tabular}{lcccc}")
+        a(r"\toprule $p$ & Acc & F1 & AUROC & C-index \\\midrule")
+        for p in ("0.0", "0.1", "0.25", "0.5"):
+            if p in robust:
+                m = robust[p]
+                a(f"{p} & {m['accuracy']:.3f} & {m['f1_macro']:.3f} & "
+                  f"{m['auroc_ovr']:.3f} & {m['c_index']:.3f} \\\\")
+        a(r"\bottomrule\end{tabular}\end{table}")
+        a(r"\begin{figure}[t]\centering")
+        a(r"\includegraphics[width=0.65\linewidth]"
+          r"{../experiments/results/mmvlm4scd_default/clinical/figures/"
+          r"robustness.png}")
+        a(r"\caption{Test AUROC and C-index versus modality-dropout "
+          r"probability $p$.}\label{fig:robust}\end{figure}")
+
+    if fairness is not None:
+        a(r"\subsection{Fairness gap}")
+        fa = fairness.get("auroc_ovr", {})
+        fc = fairness.get("c_index", {})
+        a(r"Across all subgroups (Table~\\ref{tab:sg}) we summarise "
+          r"equity by the max-min gap on AUROC and C-index "
+          f"(Table~\\ref{{tab:fair}}).")
+        a(r"\begin{table}[t]\centering")
+        a(r"\caption{Subgroup fairness gap (max -- min) on AUROC and "
+          r"C-index.}\label{tab:fair}")
+        a(r"\small\begin{tabular}{lcccc}")
+        a(r"\toprule Metric & Best & Worst & Gap & \#groups \\\midrule")
+        if fa:
+            a(f"AUROC (OvR) & {fa.get('best',0):.3f} & "
+              f"{fa.get('worst',0):.3f} & {fa.get('gap',0):.3f} & "
+              f"{int(fa.get('n_groups',0))} \\\\")
+        if fc:
+            a(f"C-index & {fc.get('best',0):.3f} & "
+              f"{fc.get('worst',0):.3f} & {fc.get('gap',0):.3f} & "
+              f"{int(fc.get('n_groups',0))} \\\\")
+        a(r"\bottomrule\end{tabular}\end{table}")
+
+    if external is not None:
+        a(r"\subsection{External-cohort simulation}")
+        a("To approximate distribution shift we draw three additional "
+          "synthetic cohorts with seeds disjoint from training and "
+          "evaluate the trained attention-fusion model on each "
+          "(Table~\\ref{tab:ext}).")
+        a(r"\begin{table}[t]\centering")
+        a(r"\caption{External-cohort simulation: each cohort is generated "
+          r"with a different RNG seed.}\label{tab:ext}")
+        a(r"\small\begin{tabular}{lcccc}")
+        a(r"\toprule Cohort & Acc & F1 & AUROC & C-index \\\midrule")
+        for k, m in external.items():
+            a(f"{_esc(k)} & {m.get('accuracy',float('nan')):.3f} & "
+              f"{m.get('f1_macro',float('nan')):.3f} & "
+              f"{m.get('auroc_ovr',float('nan')):.3f} & "
+              f"{m.get('c_index',float('nan')):.3f} \\\\")
+        a(r"\bottomrule\end{tabular}\end{table}")
 
     # 5. Discussion (restructured Q1) ---------------------------------
     a(r"\section{Discussion}")
