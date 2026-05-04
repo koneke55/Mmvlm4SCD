@@ -880,8 +880,10 @@ def build():
 
     # Declarations ----------------------------------------------------
     a(r"\section*{Declarations}\nolinenumbers")
-    a(r"\noindent\textbf{Funding.} No external funding was received for "
-      r"this work. The author was responsible for all compute costs.")
+    a(r"\noindent\textbf{Funding.} Not required. This study did not "
+      r"receive any specific grant from funding agencies in the public, "
+      r"commercial, or not-for-profit sectors; all compute costs were "
+      r"borne by the author.")
     a("")
     a(r"\noindent\textbf{Competing interests.} The author declares no "
       r"competing financial or non-financial interests.")
@@ -929,12 +931,16 @@ def build():
       "\\texttt{src/scripts/run\\_full\\_experiment.py}, "
       "\\texttt{run\\_baselines.py}, "
       "\\texttt{run\\_fusion\\_comparison.py}, "
-      "\\texttt{run\\_subgroup\\_analysis.py} and "
-      "\\texttt{run\\_survival\\_horizons.py}, then rendered by "
+      "\\texttt{run\\_subgroup\\_analysis.py}, "
+      "\\texttt{run\\_survival\\_horizons.py} and "
+      "\\texttt{run\\_clinical\\_eval.py}, then rendered by "
       "\\texttt{paper/build\\_paper.py} (ReportLab) or "
       "\\texttt{paper/build\\_tex.py} + pdflatex (this document). "
       "JSON artefacts in \\texttt{experiments/results/} are the single "
-      "source of truth.")
+      "source of truth. The repository ships 53 unit + integration "
+      "tests covering data, encoders, fusion, losses, training, "
+      "evaluation, calibration, decision curves, robustness, fairness, "
+      "and end-to-end smoke; \\texttt{pytest} is the entry point.")
 
     # References ------------------------------------------------------
     a(r"\bibliographystyle{plain}")
@@ -1002,9 +1008,22 @@ def build():
          "13.1 Discrimination and calibration reported with uncertainty.",
          "Tables~\\ref{tab:main}, \\ref{tab:boot}, \\ref{tab:brier}; "
          "Figs.~\\ref{fig:cal}, \\ref{fig:brier}."),
+        ("Clinical utility",
+         "13.2 Net benefit / decision curve and threshold-based metrics.",
+         "Sec.~Clinical utility (DCA, sens/spec, PPV/NPV)."),
+        ("Calibration error",
+         "13.3 Calibration error explicitly quantified.",
+         "ECE/MCE in Sec.~Calibration error."),
+        ("Robustness",
+         "13.4 Robustness to missing data quantified.",
+         "Modality-dropout sweep, Sec.~Robustness."),
         ("Fairness",
-         "14.1 Subgroup performance reported.",
-         "Sec.~4.7, Table~\\ref{tab:sg}, Fig.~\\ref{fig:sg}."),
+         "14.1 Subgroup performance reported with equity gap.",
+         "Sec.~Subgroup analysis + Fairness gap, "
+         "Tables~\\ref{tab:sg}, \\ref{tab:fair}."),
+        ("External validity",
+         "14.2 External or simulated external validation.",
+         "External-cohort simulation, Table~\\ref{tab:ext}."),
         ("Explainability",
          "15.1 Interpretability methods described.",
          "Gradient-based modality importance; Sec.~4.4."),

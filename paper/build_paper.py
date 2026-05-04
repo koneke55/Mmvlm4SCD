@@ -162,6 +162,7 @@ def _load_results(root: Path) -> dict:
     fdir = root / "experiments" / "results" / "fusion_comparison"
     sgdir = root / "experiments" / "results" / "subgroups"
     shdir = root / "experiments" / "results" / "survival_horizons"
+    cdir = base / "clinical"
     return {
         "summary": summary, "history": history,
         "ablation": ablation, "importance": importance,
@@ -173,6 +174,19 @@ def _load_results(root: Path) -> dict:
         "subgroup_fig": sgdir / "figures" / "subgroup_bars.png",
         "brier": _maybe_load(shdir / "brier.json"),
         "brier_fig": shdir / "brier_curve.png",
+        # Clinical-utility / robustness / fairness / external artefacts
+        "clinical_dir": cdir,
+        "clinical_summary": _maybe_load(cdir / "clinical_summary.json"),
+        "per_class_auroc": _maybe_load(cdir / "per_class_auroc.json"),
+        "decision_curve": _maybe_load(cdir / "decision_curve.json"),
+        "sens_spec": _maybe_load(cdir / "sens_spec.json"),
+        "calibration_error": _maybe_load(cdir / "calibration_error.json"),
+        "robustness": _maybe_load(cdir / "robustness.json"),
+        "fairness": _maybe_load(cdir / "fairness_gap.json"),
+        "external": _maybe_load(cdir / "external_cohort.json"),
+        "dca_fig": cdir / "figures" / "decision_curve.png",
+        "robust_fig": cdir / "figures" / "robustness.png",
+        "pcroc_fig": cdir / "figures" / "per_class_roc.png",
     }
 
 
@@ -716,6 +730,127 @@ def build(out_path: Path, root: Path = ROOT):
                             "C-index (right). Dashed vertical lines "
                             "mark the overall test-set value.",
                             styles, width=4.5 * inch))
+
+    # 5.7 Clinical utility, robustness, fairness and external validity
+    if results.get("clinical_summary") is not None:
+        flow.append(Paragraph("5.7 Clinical utility and calibration",
+                              styles["h2"]))
+        cs = results["clinical_summary"]
+        bullets = []
+        pc = results.get("per_class_auroc") or {}
+        if pc:
+            bullets.append(
+                "Per-class one-vs-rest AUROC: mild = "
+                f"{pc.get('auroc_class0', float('nan')):.3f}, "
+                f"moderate = {pc.get('auroc_class1', float('nan')):.3f}, "
+                f"severe = {pc.get('auroc_class2', float('nan')):.3f}.")
+        cer = results.get("calibration_error") or {}
+        if cer:
+            bullets.append(
+                f"Calibration: ECE = {cer.get('ece', float('nan')):.3f}, "
+                f"MCE = {cer.get('mce', float('nan')):.3f} (10 bins).")
+        if cs.get("decision_curve_max_net_benefit") is not None:
+            bullets.append(
+                "Maximum net benefit on the decision curve "
+                f"(severe vs not, prevalence "
+                f"{(results['decision_curve'] or {}).get('prevalence', 0):.2f}) "
+                f"= {cs['decision_curve_max_net_benefit']:.3f}.")
+        flow.append(Paragraph(
+            "Beyond rank-based metrics, we report threshold-based "
+            "clinical utility: " + " ".join(bullets), styles["body"]))
+        if results.get("pcroc_fig", Path()).exists():
+            flow.append(_figure(results["pcroc_fig"],
+                                "Figure 9. Per-class one-vs-rest ROC.",
+                                styles, width=3.6 * inch))
+        if results.get("dca_fig", Path()).exists():
+            flow.append(_figure(results["dca_fig"],
+                                "Figure 10. Decision-curve analysis "
+                                "(Vickers & Elkin 2006).",
+                                styles, width=4.0 * inch))
+        ss = results.get("sens_spec") or {}
+        if ss:
+            ss_rows = [["Threshold", "Sens", "Spec", "PPV", "NPV"]]
+            for t, m in ss.items():
+                ss_rows.append([t,
+                                f"{m['sensitivity']:.3f}",
+                                f"{m['specificity']:.3f}",
+                                f"{m['ppv']:.3f}",
+                                f"{m['npv']:.3f}"])
+            flow.append(_table(ss_rows, col_widths=[1.0 * inch] +
+                               [0.7 * inch] * 4))
+            flow.append(Paragraph(
+                "<b>Table 6.</b> Sensitivity, specificity, PPV and NPV "
+                "at three operating thresholds for predicting severe "
+                "disease.", styles["caption"]))
+
+    if results.get("robustness") is not None:
+        flow.append(Paragraph("5.8 Robustness to missing modalities",
+                              styles["h2"]))
+        rb = results["robustness"]
+        rows = [["p", "Acc", "F1", "AUROC", "C-index"]]
+        for p in ("0.0", "0.1", "0.25", "0.5"):
+            if p in rb:
+                m = rb[p]
+                rows.append([p, f"{m['accuracy']:.3f}",
+                             f"{m['f1_macro']:.3f}",
+                             f"{m['auroc_ovr']:.3f}",
+                             f"{m['c_index']:.3f}"])
+        flow.append(Paragraph(
+            "Each modality is zeroed out at test time with probability p, "
+            "averaged over 3 repeats; this models missing-at-random EHR.",
+            styles["body"]))
+        flow.append(_table(rows, col_widths=[0.6 * inch] +
+                           [0.7 * inch] * 4))
+        flow.append(Paragraph(
+            "<b>Table 7.</b> Test metrics under random per-sample "
+            "modality dropout.", styles["caption"]))
+        if results.get("robust_fig", Path()).exists():
+            flow.append(_figure(results["robust_fig"],
+                                "Figure 11. Test AUROC and C-index "
+                                "vs modality-dropout probability.",
+                                styles, width=4.0 * inch))
+
+    if results.get("fairness") is not None:
+        flow.append(Paragraph("5.9 Fairness gap", styles["h2"]))
+        fa = results["fairness"].get("auroc_ovr", {})
+        fc = results["fairness"].get("c_index", {})
+        rows = [["Metric", "Best", "Worst", "Gap", "#groups"]]
+        if fa:
+            rows.append(["AUROC (OvR)", f"{fa.get('best',0):.3f}",
+                         f"{fa.get('worst',0):.3f}",
+                         f"{fa.get('gap',0):.3f}",
+                         f"{int(fa.get('n_groups',0))}"])
+        if fc:
+            rows.append(["C-index", f"{fc.get('best',0):.3f}",
+                         f"{fc.get('worst',0):.3f}",
+                         f"{fc.get('gap',0):.3f}",
+                         f"{int(fc.get('n_groups',0))}"])
+        flow.append(_table(rows, col_widths=[1.2 * inch] +
+                           [0.7 * inch] * 4))
+        flow.append(Paragraph(
+            "<b>Table 8.</b> Subgroup fairness gap (max - min).",
+            styles["caption"]))
+
+    if results.get("external") is not None:
+        flow.append(Paragraph("5.10 External-cohort simulation",
+                              styles["h2"]))
+        rows = [["Cohort", "Acc", "F1", "AUROC", "C-index"]]
+        for k, m in results["external"].items():
+            rows.append([k, f"{m.get('accuracy',float('nan')):.3f}",
+                         f"{m.get('f1_macro',float('nan')):.3f}",
+                         f"{m.get('auroc_ovr',float('nan')):.3f}",
+                         f"{m.get('c_index',float('nan')):.3f}"])
+        flow.append(Paragraph(
+            "We approximate distribution shift by re-sampling cohorts "
+            "with seeds disjoint from training and evaluating the "
+            "trained attention-fusion model on each.",
+            styles["body"]))
+        flow.append(_table(rows, col_widths=[1.0 * inch] +
+                           [0.7 * inch] * 4))
+        flow.append(Paragraph(
+            "<b>Table 9.</b> External-cohort simulation: each cohort "
+            "is generated with a different RNG seed.",
+            styles["caption"]))
 
     # 6. Discussion ----------------------------------------------------
     flow.append(Paragraph("6. Discussion", styles["h1"]))

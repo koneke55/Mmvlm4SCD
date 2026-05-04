@@ -41,6 +41,7 @@ python src/scripts/run_baselines.py
 python src/scripts/run_fusion_comparison.py --seeds 3 --epochs 20
 python src/scripts/run_subgroup_analysis.py --epochs 20
 python src/scripts/run_survival_horizons.py --epochs 20
+python src/scripts/run_clinical_eval.py --config configs/default.yaml
 
 # 2. paper artefacts
 python paper/make_graphical_abstract.py
@@ -63,8 +64,12 @@ manuscript covers each:
 - [x] Line numbers and 1.5x line spacing for review
 - [x] Statistical analysis subsection
 - [x] Subgroup analysis with figure + table
-- [x] Calibration analysis (reliability diagram + Brier/IBS)
-- [x] Limitations explicit (synthetic data, no external validation, PH assumption untested)
+- [x] Calibration analysis (reliability diagram + ECE/MCE + Brier/IBS)
+- [x] **Clinical utility** (decision-curve analysis, sensitivity/specificity at thresholds, PPV/NPV, per-class AUROC)
+- [x] **Robustness** to missing modalities (test-time dropout sweep)
+- [x] **Fairness gap** (max-min subgroup AUROC and C-index)
+- [x] **External-cohort simulation** (out-of-distribution synthetic seeds)
+- [x] Limitations explicit (synthetic data, no real external validation, PH assumption untested)
 - [x] Funding, COI, Ethics, Data availability, Code availability, CRediT declarations
 - [x] **TRIPOD+AI** reporting checklist (Table~S1)
 - [x] Acknowledgements

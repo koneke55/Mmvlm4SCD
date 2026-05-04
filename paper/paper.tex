@@ -246,6 +246,68 @@ sex=M & 0.876 & 0.651 \\
 \begin{figure}[t]\centering
 \includegraphics[width=0.95\linewidth]{../experiments/results/subgroups/figures/subgroup_bars.png}
 \caption{Subgroup AUROC (left) and C-index (right). Dashed vertical lines mark the overall test-set value.}\label{fig:sg}\end{figure}
+\subsection{Clinical utility and calibration}
+\subsubsection{Per-class one-vs-rest AUROC}
+Per-class one-vs-rest AUROC localises the model's ranking ability for each severity tier (Table~\ref{tab:pcauroc}, Fig.~\ref{fig:pcroc}).
+\begin{table}[t]\centering
+\caption{Per-class one-vs-rest AUROC.}\label{tab:pcauroc}
+\small\begin{tabular}{lc}
+\toprule Class & AUROC \\\midrule
+mild & 0.869 \\
+moderate & 0.759 \\
+severe & 0.967 \\
+\bottomrule\end{tabular}\end{table}
+\begin{figure}[t]\centering
+\includegraphics[width=0.6\linewidth]{../experiments/results/mmvlm4scd_default/clinical/figures/per_class_roc.png}
+\caption{Per-class one-vs-rest ROC curves on the held-out test set.}\label{fig:pcroc}\end{figure}
+\subsubsection{Calibration error}
+Top-class probability calibration over 10 equal-width bins yields ECE = 0.186 and MCE = 0.527; the corresponding reliability diagram is shown in Fig.~\ref{fig:cal}.
+\subsubsection{Decision-curve analysis}
+For the binary `severe vs not severe' framing (prevalence = 0.15) we compare the model's net benefit against `treat all' and `treat none' policies (Fig.~\ref{fig:dca}). Sensitivity, specificity, PPV and NPV at three operating points are reported in Table~\ref{tab:opp}.
+\begin{figure}[t]\centering
+\includegraphics[width=0.6\linewidth]{../experiments/results/mmvlm4scd_default/clinical/figures/decision_curve.png}
+\caption{Decision-curve analysis (Vickers \& Elkin).}\label{fig:dca}\end{figure}
+\begin{table}[t]\centering
+\caption{Sensitivity, specificity, PPV and NPV at three operating thresholds for predicting severe disease.}\label{tab:opp}
+\small\begin{tabular}{lcccc}
+\toprule Threshold & Sens & Spec & PPV & NPV \\\midrule
+t=0.3 & 0.889 & 0.882 & 0.571 & 0.978 \\
+t=0.5 & 0.333 & 1.000 & 1.000 & 0.895 \\
+t=0.7 & 0.000 & 1.000 & nan & 0.850 \\
+\bottomrule\end{tabular}\end{table}
+\subsection{Robustness to missing modalities}
+We zero out each modality at test time with probability $p\in\{0,0.1,0.25,0.5\}$ over 3 repeats (Table~\ref{tab:robust}, Fig.~\ref{fig:robust}); this approximates the missing-at-random behaviour of real EHR data.
+\begin{table}[t]\centering
+\caption{Test metrics under random per-sample modality dropout (3 repeats per $p$).}\label{tab:robust}
+\small\begin{tabular}{lcccc}
+\toprule $p$ & Acc & F1 & AUROC & C-index \\\midrule
+0.0 & 0.700 & 0.663 & 0.865 & 0.715 \\
+0.1 & 0.711 & 0.671 & 0.865 & 0.698 \\
+0.25 & 0.639 & 0.564 & 0.796 & 0.633 \\
+0.5 & 0.600 & 0.452 & 0.729 & 0.648 \\
+\bottomrule\end{tabular}\end{table}
+\begin{figure}[t]\centering
+\includegraphics[width=0.65\linewidth]{../experiments/results/mmvlm4scd_default/clinical/figures/robustness.png}
+\caption{Test AUROC and C-index versus modality-dropout probability $p$.}\label{fig:robust}\end{figure}
+\subsection{Fairness gap}
+Across all subgroups (Table~\\ref{tab:sg}) we summarise equity by the max-min gap on AUROC and C-index (Table~\ref{tab:fair}).
+\begin{table}[t]\centering
+\caption{Subgroup fairness gap (max -- min) on AUROC and C-index.}\label{tab:fair}
+\small\begin{tabular}{lcccc}
+\toprule Metric & Best & Worst & Gap & \#groups \\\midrule
+AUROC (OvR) & 0.883 & 0.715 & 0.168 & 3 \\
+C-index & 0.827 & 0.308 & 0.519 & 5 \\
+\bottomrule\end{tabular}\end{table}
+\subsection{External-cohort simulation}
+To approximate distribution shift we draw three additional synthetic cohorts with seeds disjoint from training and evaluate the trained attention-fusion model on each (Table~\ref{tab:ext}).
+\begin{table}[t]\centering
+\caption{External-cohort simulation: each cohort is generated with a different RNG seed.}\label{tab:ext}
+\small\begin{tabular}{lcccc}
+\toprule Cohort & Acc & F1 & AUROC & C-index \\\midrule
+seed\_101 & 0.677 & 0.667 & 0.850 & 0.664 \\
+seed\_202 & 0.682 & 0.667 & 0.864 & 0.645 \\
+seed\_303 & 0.682 & 0.672 & 0.855 & 0.653 \\
+\bottomrule\end{tabular}\end{table}
 \section{Discussion}
 \subsection{Principal findings}
 On a literature-calibrated synthetic SCD cohort, an attention-fusion multimodal model attains macro AUROC = $0.867 \pm 0.007$ and Harrell C-index = $0.645 \pm 0.010$. Per-modality ablation and gradient-based importance both rank clinical features as the dominant decision-time signal; the differences between attention, cross-attention, and late fusion fall within seed variance.
@@ -262,7 +324,7 @@ Planned extensions: (1) external validation on dbGaP and MIMIC-IV-SCD subsets; (
 \section{Conclusion}
 Mmvlm4SCD is an open multimodal framework for SCD that jointly learns severity stratification and survival prediction. On a literature-calibrated synthetic benchmark, it attains AUROC = $0.867 \pm 0.007$ and C-index = $0.645 \pm 0.010$ across seeds, with clinical features dominating decision-time importance. Strong tabular baselines remain competitive. The released code, registry of public SCD sources, reproducible pipeline, and TRIPOD+AI-aligned reporting lower the barrier to extending these experiments to real, credentialed cohorts --- the next step in establishing whether multimodal fusion delivers a clinically meaningful uplift over strong tabular baselines in SCD.
 \section*{Declarations}\nolinenumbers
-\noindent\textbf{Funding.} No external funding was received for this work. The author was responsible for all compute costs.
+\noindent\textbf{Funding.} Not required. This study did not receive any specific grant from funding agencies in the public, commercial, or not-for-profit sectors; all compute costs were borne by the author.
 
 \noindent\textbf{Competing interests.} The author declares no competing financial or non-financial interests.
 
@@ -279,7 +341,7 @@ Mmvlm4SCD is an open multimodal framework for SCD that jointly learns severity s
 \noindent\textbf{Acknowledgements.} The author thanks the open-source maintainers of PyTorch, scikit-learn, lifelines, NumPy, pandas, matplotlib and ReportLab; and the NHLBI, NCBI, PhysioNet, UK Biobank and Broad Institute communities for sustaining the public data infrastructure that this work would build upon at scale.
 \linenumbers
 \section{Reproducibility}
-All numbers in this paper are produced by \texttt{src/scripts/run\_full\_experiment.py}, \texttt{run\_baselines.py}, \texttt{run\_fusion\_comparison.py}, \texttt{run\_subgroup\_analysis.py} and \texttt{run\_survival\_horizons.py}, then rendered by \texttt{paper/build\_paper.py} (ReportLab) or \texttt{paper/build\_tex.py} + pdflatex (this document). JSON artefacts in \texttt{experiments/results/} are the single source of truth.
+All numbers in this paper are produced by \texttt{src/scripts/run\_full\_experiment.py}, \texttt{run\_baselines.py}, \texttt{run\_fusion\_comparison.py}, \texttt{run\_subgroup\_analysis.py}, \texttt{run\_survival\_horizons.py} and \texttt{run\_clinical\_eval.py}, then rendered by \texttt{paper/build\_paper.py} (ReportLab) or \texttt{paper/build\_tex.py} + pdflatex (this document). JSON artefacts in \texttt{experiments/results/} are the single source of truth. The repository ships 53 unit + integration tests covering data, encoders, fusion, losses, training, evaluation, calibration, decision curves, robustness, fairness, and end-to-end smoke; \texttt{pytest} is the entry point.
 \bibliographystyle{plain}
 \bibliography{references}
 \clearpage
@@ -314,7 +376,11 @@ Statistical analysis & 10.1--10.5 Model specification, training, hyperparameters
 Risk groups & 11.1 Risk groups defined for survival. & Risk-tertile stratification (Fig.~\ref{fig:km}). \\
 Development vs validation & 12.1 Development vs validation procedures described. & 70/15/15 split; no external validation -- limitation. \\
 Model performance & 13.1 Discrimination and calibration reported with uncertainty. & Tables~\ref{tab:main}, \ref{tab:boot}, \ref{tab:brier}; Figs.~\ref{fig:cal}, \ref{fig:brier}. \\
-Fairness & 14.1 Subgroup performance reported. & Sec.~4.7, Table~\ref{tab:sg}, Fig.~\ref{fig:sg}. \\
+Clinical utility & 13.2 Net benefit / decision curve and threshold-based metrics. & Sec.~Clinical utility (DCA, sens/spec, PPV/NPV). \\
+Calibration error & 13.3 Calibration error explicitly quantified. & ECE/MCE in Sec.~Calibration error. \\
+Robustness & 13.4 Robustness to missing data quantified. & Modality-dropout sweep, Sec.~Robustness. \\
+Fairness & 14.1 Subgroup performance reported with equity gap. & Sec.~Subgroup analysis + Fairness gap, Tables~\ref{tab:sg}, \ref{tab:fair}. \\
+External validity & 14.2 External or simulated external validation. & External-cohort simulation, Table~\ref{tab:ext}. \\
 Explainability & 15.1 Interpretability methods described. & Gradient-based modality importance; Sec.~4.4. \\
 Human-AI interaction & 16.1 Human role described. & NA (no clinical deployment). \\
 Implementation & 17.1 Code and software environment available. & MIT-licensed at github.com/koneke55/Mmvlm4SCD; Sec.~3.7, Reproducibility. \\
