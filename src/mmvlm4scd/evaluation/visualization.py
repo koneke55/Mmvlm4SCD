@@ -89,6 +89,23 @@ def plot_modality_importance(importance: Dict[str, float], out_path: Path) -> Pa
     return out_path
 
 
+def plot_brier_curve(horizons, brier_values, ibs: float | None,
+                     out_path: Path) -> Path:
+    """Plot Brier score across follow-up horizons; annotate IBS."""
+    out_path = Path(out_path)
+    fig, ax = plt.subplots(figsize=(4.0, 3.0))
+    ax.plot(horizons, brier_values, "o-", color="#1a3d63")
+    ax.set_xlabel("horizon (years)")
+    ax.set_ylabel("Brier score")
+    ax.set_ylim(0, max(0.30, float(np.nanmax(brier_values)) * 1.1))
+    ttl = "Brier score over follow-up"
+    if ibs is not None and not np.isnan(ibs):
+        ttl += f"  (IBS={ibs:.3f})"
+    ax.set_title(ttl)
+    fig.tight_layout(); fig.savefig(out_path); plt.close(fig)
+    return out_path
+
+
 def plot_calibration_severity(logits: np.ndarray, y: np.ndarray, out_path: Path) -> Path:
     """Reliability diagram for the predicted top-class probability."""
     out_path = Path(out_path)
