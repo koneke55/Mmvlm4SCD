@@ -1,0 +1,10 @@
+site_name: Mmvlm4SCD
+site_description: Multimodal Model for Sickle Cell Disease
+repo_url: https://github.com/koneke55/Mmvlm4SCD
+nav:
+  - Home: index.md
+  - Architecture: architecture.md
+  - Dataset: dataset.md
+  - Contributing: CONTRIBUTING.md
+theme:
+  name: material

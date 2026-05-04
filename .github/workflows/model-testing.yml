@@ -1,0 +1,21 @@
+name: model-testing
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "0 4 * * 1"
+jobs:
+  smoke-experiment:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -U pip
+      - run: pip install --index-url https://download.pytorch.org/whl/cpu torch
+      - run: pip install -e .
+      - run: python src/scripts/run_full_experiment.py --config configs/default.yaml --smoke
+      - uses: actions/upload-artifact@v4
+        with:
+          name: experiment-results
+          path: experiments/results/

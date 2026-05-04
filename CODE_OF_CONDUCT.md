@@ -1,0 +1,7 @@
+# Code of Conduct
+
+This project adopts the [Contributor Covenant v2.1](https://www.contributor-covenant.org/version/2/1/code_of_conduct/).
+
+We are committed to fostering an open and welcoming environment. Maintainers
+will enforce respectful behavior and may remove contributions that violate
+this code. Report concerns privately to the repository owner.

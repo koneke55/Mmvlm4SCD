@@ -1,0 +1,27 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+.env
+
+# data + experiments
+data/raw/**
+data/processed/**
+data/external/**
+!data/**/.gitkeep
+!data/README.md
+experiments/checkpoints/**/*.pt
+experiments/logs/**/*.log
+*.ckpt
+
+# editor / OS
+.idea/
+.vscode/
+.DS_Store
+
+# notebooks
+.ipynb_checkpoints/

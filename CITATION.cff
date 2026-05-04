@@ -1,0 +1,16 @@
+cff-version: 1.2.0
+title: "Mmvlm4SCD: Multimodal Model for Sickle Cell Disease"
+message: "If you use this software, please cite as below."
+authors:
+  - family-names: Kone
+    given-names: Sambou
+version: 0.1.0
+date-released: 2026-05-04
+license: MIT
+repository-code: "https://github.com/koneke55/Mmvlm4SCD"
+type: software
+keywords:
+  - sickle-cell-disease
+  - multimodal-learning
+  - survival-analysis
+  - clinical-ai
