@@ -90,5 +90,6 @@ def integrated_brier_score(risk: np.ndarray, time: np.ndarray, event: np.ndarray
     valid = ~np.isnan(vals)
     if valid.sum() < 2:
         return float("nan")
-    return float(np.trapz(vals[valid], horizons[valid]) /
+    integrate = getattr(np, "trapezoid", None) or np.trapz  # numpy 1.x/2.x
+    return float(integrate(vals[valid], horizons[valid]) /
                  (horizons[valid].max() - horizons[valid].min()))
