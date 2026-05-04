@@ -89,6 +89,67 @@ def plot_modality_importance(importance: Dict[str, float], out_path: Path) -> Pa
     return out_path
 
 
+def plot_decision_curve(thresholds, nb_model, nb_all, nb_none,
+                        out_path: Path, label: str = "model") -> Path:
+    """Vickers-style decision-curve plot (net benefit vs threshold)."""
+    out_path = Path(out_path)
+    fig, ax = plt.subplots(figsize=(4.2, 3.2))
+    ax.plot(thresholds, nb_model, "-", color="#1a3d63", lw=2, label=label)
+    ax.plot(thresholds, nb_all, "--", color="#7f3d63", lw=1.4, label="treat all")
+    ax.plot(thresholds, nb_none, ":", color="#666", lw=1.2, label="treat none")
+    ax.axhline(0, color="#999", lw=0.5)
+    ax.set_xlabel("decision threshold p")
+    ax.set_ylabel("net benefit")
+    ax.set_title("Decision-curve analysis (severe vs not)")
+    ax.set_xlim(0.0, 1.0)
+    ax.legend(fontsize=8)
+    fig.tight_layout(); fig.savefig(out_path); plt.close(fig)
+    return out_path
+
+
+def plot_per_class_roc(probs: np.ndarray, y: np.ndarray, classes,
+                       out_path: Path) -> Path:
+    """Per-class one-vs-rest ROC curves on a single axis."""
+    out_path = Path(out_path)
+    fig, ax = plt.subplots(figsize=(4.0, 3.4))
+    for k, name in enumerate(classes):
+        bin_y = (y == k).astype(int)
+        if bin_y.sum() == 0 or bin_y.sum() == len(y):
+            continue
+        order = np.argsort(-probs[:, k])
+        s_sorted = probs[order, k]
+        y_sorted = bin_y[order]
+        tps = np.cumsum(y_sorted)
+        fps = np.cumsum(1 - y_sorted)
+        tpr = tps / max(int(bin_y.sum()), 1)
+        fpr = fps / max(int(len(bin_y) - bin_y.sum()), 1)
+        ax.plot(np.r_[0.0, fpr, 1.0], np.r_[0.0, tpr, 1.0], lw=1.6, label=name)
+    ax.plot([0, 1], [0, 1], "--", lw=0.8, color="#888")
+    ax.set_xlabel("False positive rate"); ax.set_ylabel("True positive rate")
+    ax.set_title("Per-class ROC (one-vs-rest)")
+    ax.legend(fontsize=8)
+    fig.tight_layout(); fig.savefig(out_path); plt.close(fig)
+    return out_path
+
+
+def plot_robustness_curve(sweep: dict, out_path: Path,
+                          metric_keys=("auroc_ovr", "c_index")) -> Path:
+    """Plot test metric vs modality-dropout probability."""
+    out_path = Path(out_path)
+    probs = sorted(sweep.keys())
+    fig, ax = plt.subplots(figsize=(4.4, 3.2))
+    for k in metric_keys:
+        vals = [sweep[p][k] for p in probs]
+        ax.plot(probs, vals, "o-", lw=1.6, label=k)
+    ax.set_xlabel("test-time modality dropout probability")
+    ax.set_ylabel("metric")
+    ax.set_ylim(0.4, 1.0)
+    ax.set_title("Robustness to missing modalities")
+    ax.legend(fontsize=8)
+    fig.tight_layout(); fig.savefig(out_path); plt.close(fig)
+    return out_path
+
+
 def plot_brier_curve(horizons, brier_values, ibs: float | None,
                      out_path: Path) -> Path:
     """Plot Brier score across follow-up horizons; annotate IBS."""

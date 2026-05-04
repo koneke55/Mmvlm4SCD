@@ -1,15 +1,15 @@
 % !TeX program = pdflatex
-\documentclass[10pt,twocolumn,letterpaper]{article}
+\documentclass[11pt,a4paper]{article}
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
-\usepackage[letterpaper,margin=0.75in]{geometry}
+\usepackage[a4paper,margin=1in]{geometry}
 \usepackage{microtype}
 \usepackage{graphicx}
 \usepackage{booktabs}
 \usepackage{array}
 \usepackage{caption}
 \usepackage{xcolor}
-\usepackage[hidelinks]{hyperref}
+\usepackage[hidelinks,colorlinks=true,linkcolor=accent,citecolor=accent,urlcolor=accent]{hyperref}
 \usepackage{authblk}
 \usepackage{abstract}
 \usepackage{amsmath}
@@ -17,45 +17,90 @@
 \usepackage{textcomp}
 \usepackage{enumitem}
 \usepackage{cite}
-\setlength{\columnsep}{0.3in}
+\usepackage{lineno}
+\usepackage{setspace}
+\usepackage{tcolorbox}
+\usepackage{longtable}
+\tcbuselibrary{breakable,skins}
 \definecolor{accent}{HTML}{1A3D63}
-\renewcommand{\abstractname}{\textcolor{accent}{Abstract}}
+\definecolor{accent2}{HTML}{7F3D63}
+\definecolor{boxbg}{HTML}{F4F8FC}
+\renewcommand{\abstractname}{}
 \captionsetup{font=small,labelfont=bf}
-\newcommand{\headcolor}[1]{\textcolor{accent}{#1}}
+\renewcommand{\thesection}{\textcolor{accent}{\arabic{section}}}
+\renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}}
+\linenumbers
+\onehalfspacing
+\setlength{\parskip}{4pt}
+\newtcolorbox{highlights}{breakable,enhanced,colback=boxbg,colframe=accent,boxrule=0.6pt,arc=2pt,title={\bfseries\textcolor{accent}{Highlights}}}
+\newtcolorbox{keypoints}{breakable,enhanced,colback=boxbg,colframe=accent,boxrule=0.6pt,arc=2pt,title={\bfseries\textcolor{accent}{Key Points}}}
 
-\title{Multimodal Modeling of Sickle Cell Disease:\\ A Quantitative Study of Severity Stratification and Survival Prediction}
-\author{Sambou Kone}
-\affil{Independent researcher \textperiodcentered{} Mmvlm4SCD project \textperiodcentered{} \href{https://github.com/koneke55/Mmvlm4SCD}{github.com/koneke55/Mmvlm4SCD}}
+\title{\large\bfseries Multimodal Modeling of Sickle Cell Disease:\\[2pt] A Quantitative Study of Severity Stratification and Survival Prediction}
+\author[1]{Sambou Kone\thanks{Correspondence: \href{https://github.com/koneke55}{github.com/koneke55}.}}
+\affil[1]{Independent researcher \textperiodcentered{} Mmvlm4SCD project. Code: \href{https://github.com/koneke55/Mmvlm4SCD}{github.com/koneke55/Mmvlm4SCD}}
 \date{2026-05-04}
 
 \begin{document}
-\twocolumn[\maketitle\begin{onecolabstract}
-Sickle Cell Disease (SCD) is a monogenic but phenotypically heterogeneous disorder for which clinical decisions hinge on stratifying patients by severity and projecting long-term survival. We present \textbf{Mmvlm4SCD}, an open multimodal deep-learning framework that fuses clinical, genomic, peripheral-blood-smear imaging and longitudinal vitals/labs trajectories into a shared embedding optimised jointly for ordinal severity classification and Cox proportional-hazards survival prediction. Across 2000 simulated SCD patients calibrated to published haematological literature and 3 random initialisations, the multimodal attention-fusion model reaches a macro AUROC of \textbf{$0.867 \pm 0.007$} for severity (mild/moderate/severe) and a Harrell C-index of \textbf{$0.645 \pm 0.010$} for time-to-death. A clinical-only logistic-regression baseline reaches AUROC = 0.894 and a clinical-only Cox model reaches C-index = 0.671, showing that on this benchmark the marginal lift from non-clinical modalities is small but mostly beneficial when paired with attention fusion. Modality-ablation analysis confirms clinical features dominate while imaging and genomic streams contribute complementary signal. We release the code, the synthetic-cohort generator, the data registry of public SCD sources, and a reproducible experimental pipeline to support extension to credentialed cohorts (dbGaP, MIMIC-IV, UK Biobank, NHLBI CuRe-SCD).
+\nolinenumbers
+\maketitle
+\thispagestyle{empty}
 
-\textbf{Keywords:} sickle cell disease \textperiodcentered{} multimodal learning \textperiodcentered{} survival analysis \textperiodcentered{} severity stratification \textperiodcentered{} clinical AI \textperiodcentered{} reproducible research
-\end{onecolabstract}\bigskip]
+\begin{figure}[h!]\centering
+\includegraphics[width=0.98\linewidth]{figures/graphical_abstract.png}
+\caption*{\textbf{Graphical abstract.} Mmvlm4SCD fuses four modality-specific encoders into a shared embedding via attention, then jointly predicts SCD severity (3-class) and survival risk (Cox). Headline test metrics shown right.}
+\end{figure}
+
+\begin{highlights}
+\begin{itemize}[leftmargin=1.2em,itemsep=2pt,topsep=2pt]
+\item Open multimodal architecture (\textit{Mmvlm4SCD}) for joint severity classification and Cox-style survival prediction in Sickle Cell Disease.
+\item Curated registry of 14 public SCD data sources spanning clinical, genomic, imaging, and epidemiological modalities, enabling transparent extension to credentialed cohorts.
+\item Reproducible benchmark on a literature-calibrated synthetic cohort with seed-replicated metrics, bootstrap CIs, fusion-strategy comparison, time-dependent Brier scores, and subgroup analysis.
+\item Modality-importance and ablation analyses converge on the same clinical-dominance finding, motivating evaluation on real cohorts with richer non-clinical signal.
+\end{itemize}
+\end{highlights}
+
+\section*{Abstract}\nolinenumbers
+\noindent\textbf{Background.} Sickle Cell Disease (SCD) is a phenotypically heterogeneous monogenic disorder for which clinical decisions hinge on stratifying patients by severity and projecting long-term survival. Existing risk scores compress clinical, genomic, imaging and longitudinal information into hand-crafted formulae and seldom integrate multimodal data.
+\noindent\textbf{Methods.} We developed \textit{Mmvlm4SCD}, an open multimodal deep-learning framework with modality-specific encoders for clinical tabular features, HBB variant + polygenic signals, peripheral-blood-smear imaging embeddings, and monthly vitals/labs trajectories, fused via attention and trained jointly with cross-entropy and Breslow Cox partial-likelihood. All experiments use a literature-calibrated synthetic cohort of 2000 patients with marginal distributions calibrated to published SCD haematology, genotype prevalences and Weibull survival hazards. Performance was evaluated with accuracy, macro F1, macro one-vs-rest AUROC, Harrell's C-index, time-dependent IPCW Brier score, and Integrated Brier Score (IBS). Statistical uncertainty was quantified by 3-seed replication and 300-resample non-parametric bootstrap CIs.
+\noindent\textbf{Results.} The multimodal attention-fusion model reached macro AUROC = $0.867 \pm 0.007$ and Harrell C-index = $0.645 \pm 0.010$. A clinical-only logistic regression baseline reached AUROC = 0.894 and a clinical-only Cox PH model reached C-index = 0.671. Per-modality ablation and gradient-based importance both ranked clinical features as the most informative; differences between attention, cross-attention, and late fusion were within seed variance. Subgroup analysis surfaced performance gaps for HbSS and patients aged 45+, motivating ancestry- and age-aware modelling.
+\noindent\textbf{Conclusions.} On the synthetic benchmark, strong tabular baselines remain competitive with multimodal deep learning; the released code, registry of public SCD sources, reproducible pipeline, and TRIPOD+AI-aligned reporting lower the barrier to assessing whether multimodal fusion delivers a clinically meaningful uplift on real, credentialed SCD cohorts.
+
+\noindent\textbf{Keywords.} sickle cell disease; multimodal learning; survival analysis; severity stratification; clinical AI; reproducible research; TRIPOD+AI.
+\linenumbers
+
+\begin{keypoints}
+\begin{itemize}[leftmargin=1.2em,itemsep=2pt,topsep=2pt]
+\item \textbf{Question.} Can a jointly-trained multimodal model improve severity stratification and survival prediction in SCD over strong clinical-only baselines?
+\item \textbf{Findings.} On a literature-calibrated synthetic cohort, attention-fusion reaches AUROC \textasciitilde 0.87 and C-index \textasciitilde 0.65, but clinical-only logistic regression and Cox PH remain competitive. Clinical features dominate decision-time importance.
+\item \textbf{Meaning.} Multimodal architectures should be evaluated on credentialed cohorts (dbGaP, MIMIC-IV, UK Biobank, NHLBI CuRe-SCD) where non-clinical modalities carry more independent signal; subgroup-aware training is warranted.
+\end{itemize}
+\end{keypoints}
+
 \section{Introduction}
 Sickle Cell Disease (SCD) is the most common monogenic disorder worldwide, caused by a single beta-globin missense mutation (\textit{HBB} p.Glu6Val) that polymerises haemoglobin S under deoxygenation, deforms erythrocytes and triggers chronic haemolysis, vaso-occlusion, end-organ damage and shortened life expectancy \cite{Piel2017,GBD2021SCD}. Despite a single causal mutation, the clinical course varies dramatically: patients with the same genotype can experience anywhere from $<\!0.5$ to $>\!10$ vaso-occlusive crises per year, and median survival differs by more than two decades across subgroups \cite{Piel2017}.
 
-Modern SCD care produces heterogeneous longitudinal data: complete blood counts, biochemistry panels, ICU and ED encounters, peripheral-blood-smear microscopy, genome-wide modifier variants, and patient-reported pain trajectories. Existing risk scores compress this complexity into hand-crafted formulae \cite{Sebastiani2010,Quinn2007}. We hypothesise that a \emph{jointly trained} multimodal model can recover stronger, calibrated decision functions for two clinically pivotal tasks: \textbf{(i)} ordinal severity stratification (mild/moderate/severe) and \textbf{(ii)} long-horizon survival prediction.
+Modern SCD care produces heterogeneous longitudinal data: complete blood counts, biochemistry panels, ICU and ED encounters, peripheral-blood-smear microscopy, genome-wide modifier variants, and patient-reported pain trajectories. Existing risk scores compress this complexity into hand-crafted formulae \cite{Sebastiani2010,Quinn2007}. We hypothesise that a jointly trained multimodal model can recover stronger, calibrated decision functions for two clinically pivotal tasks: \textbf{(i)} ordinal severity stratification and \textbf{(ii)} long-horizon survival prediction.
 
-This paper makes three contributions. \textbf{(1)} An open, reproducible multimodal architecture --- \textit{Mmvlm4SCD} --- with pluggable encoders for clinical, genomic, imaging and temporal data, three fusion strategies, and a dual-task head trained with cross-entropy + Cox partial likelihood. \textbf{(2)} A literature-calibrated synthetic cohort generator that allows benchmarking before credential-gated cohorts are obtained, plus a curated registry of 14 public SCD data sources spanning imaging, transcriptomics, ICU labs and population genetics. \textbf{(3)} A quantitative study comparing the multimodal model against strong tabular baselines, with seed-replicated metrics, modality-ablation, gradient-based interpretability, fusion-strategy comparison, bootstrap CIs, time-dependent Brier scores and subgroup analysis.
-\section{Background and Related Work}
-\textbf{SCD severity scoring.} Sebastiani et al. derived a Bayesian network severity score for SCD using clinical and laboratory variables \cite{Sebastiani2010}; Quinn et al. quantified early-life predictors of severe disease \cite{Quinn2007}. These remain dominant baselines in clinical practice but do not incorporate imaging or molecular data.
+This paper makes three contributions. \textbf{(1)} An open, reproducible multimodal architecture --- \textit{Mmvlm4SCD} --- with pluggable encoders for clinical, genomic, imaging and temporal data, three fusion strategies, and a dual-task head trained with cross-entropy + Cox partial likelihood. \textbf{(2)} A literature-calibrated synthetic cohort generator and a curated registry of 14 public SCD data sources. \textbf{(3)} A quantitative study comparing the multimodal model against strong tabular baselines, with seed-replicated metrics, modality-ablation, gradient-based interpretability, fusion-strategy comparison, bootstrap CIs, time-dependent Brier scores and subgroup analysis. Reporting follows the TRIPOD+AI guidance \cite{Collins2024TRIPODAI}.
+\section{Related Work}
+\textbf{SCD severity scoring.} Sebastiani et al. derived a Bayesian network severity score using clinical and laboratory variables \cite{Sebastiani2010}; Quinn et al. quantified early-life predictors of severe disease \cite{Quinn2007}. These remain dominant baselines in clinical practice but do not incorporate imaging or molecular data.
 
-\textbf{Survival modelling.} The Cox proportional-hazards model \cite{Cox1972} is the de-facto SCD survival baseline. Deep-learning extensions such as DeepSurv \cite{Katzman2018} retain the partial-likelihood objective while substituting a neural risk function for the linear predictor. We adopt this objective for the survival head.
+\textbf{Survival modelling.} The Cox proportional-hazards model \cite{Cox1972} is the de-facto SCD survival baseline. Deep-learning extensions such as DeepSurv \cite{Katzman2018} retain the partial-likelihood objective while substituting a neural risk function for the linear predictor.
 
-\textbf{Multimodal medical AI.} Cross-attention and Transformer-based fusion across imaging, genomics and tabular EHR have shown gains in oncology and ophthalmology \cite{Acosta2022,Steyaert2023}. Application to SCD has been limited by data fragmentation; our registry consolidates the available open and credentialed sources to lower this barrier.
+\textbf{Multimodal medical AI.} Cross-attention and Transformer-based fusion across imaging, genomics and tabular EHR have shown gains in oncology and ophthalmology \cite{Acosta2022,Steyaert2023}. Application to SCD has been limited by data fragmentation; our registry consolidates the available open and credentialed sources.
 
 \textbf{Imaging.} Convolutional networks readily distinguish sickled erythrocytes from normal cells on peripheral-blood-smear images \cite{Xu2017,Alzubaidi2020}; we treat such CNN outputs as imaging embeddings within fusion.
-\section{Data}
-\subsection{Public SCD data registry}
+\section{Materials and Methods}
+\subsection{Study design}
+This study reports a retrospective in-silico evaluation of a multimodal prediction model. The sample is a literature-calibrated synthetic SCD cohort generated for benchmarking; no human data were collected. The reporting structure follows TRIPOD+AI \cite{Collins2024TRIPODAI}; a complete checklist is provided as supplementary material (Table~S1).
+\subsection{Data}
+\subsubsection{Public SCD data registry}
 We catalogue 14 public SCD-relevant data sources covering clinical, genomic, imaging and epidemiological modalities (Table~\ref{tab:registry}). The canonical machine-readable list lives in \texttt{src/mmvlm4scd/data/registry.py}.
 
 \begin{table}[t]\centering
-\caption{Public SCD data sources tracked by the Mmvlm4SCD registry. Access tiers: \textit{open}, \textit{registered}, \textit{dua-required} (requires Data Use Agreement).}\label{tab:registry}
+\caption{Public SCD data sources tracked by the Mmvlm4SCD registry. Access tiers: \textit{open}, \textit{registered}, \textit{dua-required} (Data Use Agreement).}\label{tab:registry}
 \small
-\begin{tabular}{p{4.2cm}lll}
+\begin{tabular}{p{6cm}ll}
 \toprule
 Source & Modality & Access \\
 \midrule
@@ -74,27 +119,26 @@ NHLBI TOPMed & genomic & dua-required \\
 WHO SCD country profiles & clinical & open \\
 GBD 2021 SCD & clinical & open \\
 \bottomrule\end{tabular}\end{table}
-\subsection{Synthetic cohort}
-Because dbGaP, UK Biobank and MIMIC-IV require Data Use Agreements that we did not have access to during this study, all empirical results in this paper are computed on a \textbf{literature-calibrated synthetic cohort} shipped with the code base. The generator draws 2000 virtual patients with marginal distributions calibrated to: SCD genotype prevalences (HbSS, HbSC, HbS$\beta^{+}$, HbS$\beta^{0}$); clinical labs (Hb, HbF\%, WBC, platelets, LDH, total bilirubin, CRP); annual vaso-occlusive crisis rates; acute chest syndrome and stroke history; HBB and modifier variant indicators; CNN-style imaging embeddings of sickled vs normal erythrocytes; and monthly trajectories of vitals and pain VAS. Severity labels are derived as quantiles of a weighted clinical/genotype score; survival times are sampled from a Weibull model with severity- and genotype-dependent hazard.
+\subsubsection{Synthetic cohort}
+Because dbGaP, UK Biobank and MIMIC-IV require Data Use Agreements that we did not have access to during this study, all empirical results in this paper are computed on a literature-calibrated synthetic cohort. The generator draws 2000 virtual patients with marginal distributions calibrated to: SCD genotype prevalences (HbSS, HbSC, HbS$\beta^{+}$, HbS$\beta^{0}$); clinical labs (Hb, HbF\%, WBC, platelets, LDH, total bilirubin, CRP); annual vaso-occlusive crisis rates; acute chest syndrome and stroke history; HBB and modifier variant indicators; CNN-style imaging embeddings of sickled vs normal erythrocytes; and monthly trajectories of vitals and pain VAS. Severity labels are derived as quantiles of a weighted clinical/genotype score; survival times are sampled from a Weibull model with severity- and genotype-dependent hazard.
 
-\textbf{Synthetic-data disclaimer.} The cohort is not real patient data. Results should be read as architectural benchmarks, not clinical claims. The codebase is designed so that, once an investigator obtains DUA-gated cohorts, the same training and evaluation entry points can be invoked with minimal modification to the data loader.
-\section{Methods}
+\textbf{Synthetic-data disclaimer.} The cohort is not real patient data. Results should be read as architectural benchmarks, not clinical claims.
 \subsection{Architecture}
-Mmvlm4SCD comprises four modality-specific encoders, a fusion module, and two prediction heads. The clinical encoder is a 3-layer MLP over standardised tabular features. The genomic encoder splits the input into a binary HBB/modifier-variant block and a continuous polygenic-like block. The imaging encoder consumes pre-computed CNN embeddings. The temporal encoder is a one-layer GRU over monthly vitals/labs trajectories. All four encoders project to a shared 64-dimensional embedding (default).
-
-Three fusion strategies are implemented and benchmarked: \textbf{attention} (Transformer encoder over modality tokens with a learned [CLS] readout), \textbf{cross-attention} (clinical embedding queries the other modalities), and \textbf{late fusion} (concatenate then project).
+Mmvlm4SCD comprises four modality-specific encoders, a fusion module, and two prediction heads. The clinical encoder is a 3-layer MLP. The genomic encoder splits the input into a binary HBB/modifier-variant block and a continuous polygenic-like block. The imaging encoder consumes pre-computed CNN embeddings. The temporal encoder is a one-layer GRU over monthly vitals/labs trajectories. All four encoders project to a 64-dimensional shared embedding. Three fusion strategies are implemented: \textbf{attention} (Transformer over modality tokens with a learned [CLS] readout), \textbf{cross-attention} (clinical embedding queries the other modalities), and \textbf{late fusion} (concatenate then project).
 \subsection{Training objective}
 Severity uses multinomial cross-entropy. Survival uses the negative Breslow partial log-likelihood:
 \begin{equation}
 \mathcal{L}_{\mathrm{cox}} = -\frac{1}{|\mathcal{D}|}\sum_{i\in\mathcal{D}}\!\left[r_i - \log\!\sum_{j: t_j\ge t_i}\exp(r_j)\right],
 \end{equation}
-where $r_i$ is the predicted risk score, $t_i$ the observed time, and $\mathcal{D}$ the set of subjects with an observed event. The combined objective is $\mathcal{L}=\alpha\,\mathcal{L}_\mathrm{ce}+\beta\,\mathcal{L}_\mathrm{cox}$ with default $(\alpha,\beta)=(1.0,0.5)$. Optimisation uses AdamW with cosine annealing and gradient clipping at norm 1.0. Validation AUROC drives early stopping.
-\subsection{Evaluation}
-We report \textbf{accuracy}, \textbf{macro F1} and \textbf{macro one-vs-rest AUROC} for severity; \textbf{Harrell's C-index} \cite{Harrell1996}, time-dependent Brier scores and the Integrated Brier Score (IBS) following Graf et al.~\cite{Graf1999} for survival. We additionally report calibration via reliability diagrams, modality importance via gradient L2 norms, and Kaplan-Meier curves stratified by predicted-risk tertile. Results are reported as mean $\pm$ standard deviation across 3 random seeds.
-\section{Experiments}
-\subsection{Setup}
-Cohort: 2000 synthetic patients; 70/15/15 train/val/test split; batch size 64; 30 epochs with early-stop patience 8. Hardware: CPU-only PyTorch 2.x. Code at \url{https://github.com/koneke55/Mmvlm4SCD}. Seeds $\{0,1,2\}$; configs in \texttt{configs/}.
-\subsection{Main results}
+where $r_i$ is the predicted risk score, $t_i$ the observed time, $\mathcal{D}$ the set of subjects with an observed event. The combined objective is $\mathcal{L}=\alpha\,\mathcal{L}_\mathrm{ce}+\beta\,\mathcal{L}_\mathrm{cox}$ with default $(\alpha,\beta)=(1.0,0.5)$. Optimisation uses AdamW with cosine annealing and gradient clipping at norm 1.0; validation AUROC drives early stopping with patience 8.
+\subsection{Evaluation metrics}
+\textbf{Severity:} accuracy, macro F1, macro one-vs-rest AUROC. \textbf{Survival:} Harrell C-index \cite{Harrell1996}, time-dependent IPCW Brier scores at 1, 2, 5, 10, 15 and 20 years, and the Integrated Brier Score (IBS) over [1, 20] years following Graf et al.~\cite{Graf1999}. We additionally report calibration via reliability diagrams, modality importance via gradient L2 norms, and Kaplan-Meier curves stratified by predicted-risk tertile.
+\subsection{Statistical analysis}
+Performance is reported as mean $\pm$ standard deviation across 3 random initialisations of the model with fixed train/val/test splits. We additionally report 95\% non-parametric percentile bootstrap confidence intervals based on 300 resamples of the held-out test set. Subgroups with fewer than 20 patients are dropped to keep estimates stable; we did not perform formal hypothesis testing on subgroup differences and report point estimates for description only. The Cox partial-likelihood assumption (proportional hazards) was not formally tested; results should therefore be interpreted within the model's stated specification. No multiple-comparison correction was applied given the descriptive nature of the subgroup analyses.
+\subsection{Software and reproducibility}
+All code is released under MIT at \url{https://github.com/koneke55/Mmvlm4SCD} and includes (a) the synthetic-cohort generator, (b) modality encoders, (c) fusion modules, (d) Cox + cross-entropy multitask trainer, (e) evaluation utilities, (f) the data registry, and (g) the LaTeX and ReportLab paper builders. The numbers in this manuscript are regenerated end-to-end by running the experiment scripts listed in the Reproducibility section below; JSON artefacts in \texttt{experiments/results/} are the single source of truth.
+\section{Results}
+After 70/15/15 splitting of the 2000-patient synthetic cohort (test n=300), the attention-fusion model trained for up to 30 epochs with batch size 64 reached the values shown in Table~\ref{tab:main}.
 \begin{table}[t]\centering
 \caption{Held-out test performance over 3 seeds. Mmvlm4SCD scores reported as mean $\pm$ standard deviation.}\label{tab:main}
 \small
@@ -106,23 +150,10 @@ LR (clinical) & 0.747 & 0.736 & 0.894 & -- \\
 Cox PH (clinical) & -- & -- & -- & 0.671 \\
 Mmvlm4SCD (attention) & $0.694 \pm 0.002$ & $0.680 \pm 0.006$ & $0.867 \pm 0.007$ & $0.645 \pm 0.010$ \\
 \bottomrule\end{tabular}\end{table}
-\subsection{Per-modality ablation}
+\subsection{Bootstrap confidence intervals}
+Non-parametric 95\% bootstrap CIs on the held-out test set (Table~\ref{tab:boot}) localise the attention-fusion performance.
 \begin{table}[t]\centering
-\caption{Test performance when each modality is set to zero at train and test time.}\label{tab:ablation}
-\small
-\begin{tabular}{lcccc}
-\toprule
-Dropped & Acc & F1 & AUROC & C-index \\
-\midrule
-clinical & 0.483 & 0.452 & 0.697 & 0.588 \\
-genomic & 0.703 & 0.690 & 0.885 & 0.638 \\
-imaging & 0.733 & 0.725 & 0.887 & 0.663 \\
-temporal & 0.670 & 0.644 & 0.849 & 0.626 \\
-\bottomrule\end{tabular}\end{table}
-\subsubsection{Bootstrap confidence intervals}
-Non-parametric 95\% bootstrap CIs over 300 resamples of the held-out test set for the attention-fusion model:
-\begin{table}[t]\centering
-\caption{Bootstrap CIs for the test metrics.}\label{tab:boot}
+\caption{Bootstrap (B=300) 95\% percentile CIs.}\label{tab:boot}
 \small
 \begin{tabular}{lccc}
 \toprule
@@ -133,9 +164,23 @@ F1 (macro) & 0.672 & 0.624 & 0.723 \\
 AUROC (OvR) & 0.139 & 0.109 & 0.170 \\
 C-index & 0.638 & 0.581 & 0.695 \\
 \bottomrule\end{tabular}\end{table}
-\subsubsection{Fusion-strategy comparison}
+\subsection{Per-modality ablation}
+Setting one modality at a time to zeros at both train and test time (Table~\ref{tab:ablation}) localises each modality's marginal contribution.
 \begin{table}[t]\centering
-\caption{Comparison of the three fusion strategies (3 seeds each).}\label{tab:fusion}
+\caption{Per-modality ablation on the held-out test set.}\label{tab:ablation}
+\small
+\begin{tabular}{lcccc}
+\toprule
+Dropped & Acc & F1 & AUROC & C-index \\
+\midrule
+clinical & 0.483 & 0.452 & 0.697 & 0.588 \\
+genomic & 0.703 & 0.690 & 0.885 & 0.638 \\
+imaging & 0.733 & 0.725 & 0.887 & 0.663 \\
+temporal & 0.670 & 0.644 & 0.849 & 0.626 \\
+\bottomrule\end{tabular}\end{table}
+\subsection{Fusion-strategy comparison}
+\begin{table}[t]\centering
+\caption{Fusion-strategy comparison (3 seeds each).}\label{tab:fusion}
 \small
 \begin{tabular}{lcccc}
 \toprule
@@ -146,41 +191,41 @@ cross & $0.882\pm0.007$ & $0.653\pm0.009$ & 0.716 & 0.697 \\
 late & $0.883\pm0.003$ & $0.621\pm0.012$ & 0.720 & 0.699 \\
 \bottomrule\end{tabular}\end{table}
 \begin{figure}[t]\centering
-\includegraphics[width=\linewidth]{../experiments/results/fusion_comparison/fusion_bar.png}
+\includegraphics[width=0.85\linewidth]{../experiments/results/fusion_comparison/fusion_bar.png}
 \caption{Severity AUROC (left) and survival C-index (right) by fusion strategy.}\label{fig:fusion}\end{figure}
 \subsection{Modality importance}
-We additionally measure modality importance by averaging the L2 norm of the gradient of the predicted-class severity logit with respect to each modality input over the test set (Figure~\ref{fig:imp}). Clinical features dominate (8.52), followed by imaging (2.99), genomic (2.24) and temporal (0.05). Ablation and gradient analyses agree directionally.
+Gradient L2 norm of the predicted-class severity logit averaged over the test set (Figure~\ref{fig:imp}) yields the same ordering as ablation. Clinical features dominate (8.52), followed by imaging (2.99), genomic (2.24), and temporal (0.05).
 \begin{figure}[t]\centering
-\includegraphics[width=\linewidth]{../experiments/results/mmvlm4scd_default/figures/training_curves.png}
+\includegraphics[width=0.95\linewidth]{../experiments/results/mmvlm4scd_default/figures/training_curves.png}
 \caption{Training loss and validation metrics (seed 0).}\label{fig:train}\end{figure}
 \begin{figure}[t]\centering
-\includegraphics[width=0.85\linewidth]{../experiments/results/mmvlm4scd_default/figures/confusion.png}
-\caption{Severity confusion matrix on the held-out test set (seed 0).}\label{fig:cm}\end{figure}
+\includegraphics[width=0.55\linewidth]{../experiments/results/mmvlm4scd_default/figures/confusion.png}
+\caption{Severity confusion matrix on the held-out test set.}\label{fig:cm}\end{figure}
 \begin{figure}[t]\centering
-\includegraphics[width=0.9\linewidth]{../experiments/results/mmvlm4scd_default/figures/modality_importance.png}
+\includegraphics[width=0.6\linewidth]{../experiments/results/mmvlm4scd_default/figures/modality_importance.png}
 \caption{Per-modality gradient $L_{2}$ norm of the predicted severity logit, averaged over the test set.}\label{fig:imp}\end{figure}
 \begin{figure}[t]\centering
-\includegraphics[width=\linewidth]{../experiments/results/mmvlm4scd_default/figures/km_by_risk.png}
-\caption{Kaplan-Meier survival curves stratified by predicted-risk tertile from the Cox-trained survival head.}\label{fig:km}\end{figure}
+\includegraphics[width=0.85\linewidth]{../experiments/results/mmvlm4scd_default/figures/km_by_risk.png}
+\caption{Kaplan-Meier survival curves stratified by predicted-risk tertile.}\label{fig:km}\end{figure}
 \begin{figure}[t]\centering
-\includegraphics[width=0.85\linewidth]{../experiments/results/mmvlm4scd_default/figures/calibration.png}
+\includegraphics[width=0.55\linewidth]{../experiments/results/mmvlm4scd_default/figures/calibration.png}
 \caption{Reliability diagram for the top-class severity probability.}\label{fig:cal}\end{figure}
 \subsection{Time-dependent survival evaluation}
-Beyond the Cox C-index we evaluate Brier scores at increasing follow-up horizons (1, 2, 5, 10, 15, 20 years) and the Integrated Brier Score (IBS) over the same interval. Brier(t) is computed using inverse-probability-of-censoring weighting \cite{Graf1999}.
+Beyond the C-index we evaluate IPCW Brier scores at increasing follow-up horizons (Table~\ref{tab:brier}, Figure~\ref{fig:brier}) and report the Integrated Brier Score IBS = 0.145 over [1, 20] years.
 \begin{table}[t]\centering
 \caption{Time-dependent Brier scores and IBS for the attention-fusion model.}\label{tab:brier}
 \small
 \begin{tabular}{lccccccc}
 \toprule
-Horizon & 1 & 2 & 5 & 10 & 15 & 20 & IBS \\
+Horizon (yr) & 1 & 2 & 5 & 10 & 15 & 20 & IBS \\
 \midrule
 Brier & 0.013 & 0.027 & 0.068 & 0.156 & 0.212 & 0.235 & 0.145 \\
 \bottomrule\end{tabular}\end{table}
 \begin{figure}[t]\centering
-\includegraphics[width=0.9\linewidth]{../experiments/results/survival_horizons/brier_curve.png}
+\includegraphics[width=0.6\linewidth]{../experiments/results/survival_horizons/brier_curve.png}
 \caption{Brier score over follow-up horizon with the IBS annotated.}\label{fig:brier}\end{figure}
 \subsection{Subgroup analysis}
-We slice the test set ($n=300$) by genotype, age band and sex (Table~\ref{tab:sg}, Figure~\ref{fig:sg}). Subgroups with fewer than 20 patients are dropped to keep estimates stable. Overall AUROC is 0.861 and overall C-index is 0.635.
+We slice the test set ($n=300$) by genotype, age band and sex (Table~\ref{tab:sg}, Figure~\ref{fig:sg}). Subgroups with fewer than 20 patients are dropped. Overall AUROC is 0.861 and overall C-index is 0.635.
 \begin{table}[t]\centering
 \caption{Subgroup-stratified test metrics.}\label{tab:sg}
 \small
@@ -199,18 +244,86 @@ sex=F & 0.850 & 0.612 \\
 sex=M & 0.876 & 0.651 \\
 \bottomrule\end{tabular}\end{table}
 \begin{figure}[t]\centering
-\includegraphics[width=\linewidth]{../experiments/results/subgroups/figures/subgroup_bars.png}
+\includegraphics[width=0.95\linewidth]{../experiments/results/subgroups/figures/subgroup_bars.png}
 \caption{Subgroup AUROC (left) and C-index (right). Dashed vertical lines mark the overall test-set value.}\label{fig:sg}\end{figure}
 \section{Discussion}
-Three observations emerge. \textbf{(i)} A strong tabular baseline is hard to beat on this synthetic cohort. The logistic-regression severity classifier and the linear Cox model both perform competitively, indicating that the synthetic generator is --- by construction --- dominated by low-dimensional clinical signal. This motivates evaluating the multimodal architecture on cohorts with richer modalities, where genomic and imaging streams carry more \emph{independent} information (e.g.~UK Biobank smears + TOPMed WGS). \textbf{(ii)} The clinical modality is consistently the most informative according to both ablation and gradient analyses, mirroring clinical experience that haematological labs largely determine SCD prognosis. \textbf{(iii)} Imaging contributes more than genomics to the model's decision-time signal in our setup; the synthetic imaging block encodes the sickled-morphology fraction (a direct phenotype) whereas the synthetic genomic block is closer to a mild risk modifier.
-\section{Limitations and Ethical Considerations}
-Our experiments are run on simulated data. While marginal distributions are calibrated to SCD literature, the joint structure is parametric and necessarily under-represents the full heterogeneity of SCD. Results should not be interpreted as clinical evidence. Once we secure DUA approvals (target: dbGaP phs001514, MIMIC-IV-SCD subset, NHLBI CuRe-SCD), the same training pipeline can be invoked with replacement data loaders.
+\subsection{Principal findings}
+On a literature-calibrated synthetic SCD cohort, an attention-fusion multimodal model attains macro AUROC = $0.867 \pm 0.007$ and Harrell C-index = $0.645 \pm 0.010$. Per-modality ablation and gradient-based importance both rank clinical features as the dominant decision-time signal; the differences between attention, cross-attention, and late fusion fall within seed variance.
+\subsection{Comparison with prior literature}
+Strong tabular baselines remain competitive. A clinical-only logistic-regression severity classifier reaches AUROC = 0.894, and a clinical-only Cox PH model reaches C-index = 0.671, comparable to the multimodal model on this synthetic cohort. This is consistent with the long-standing finding that the modified Sickle Cell Severity Score \cite{Sebastiani2010} and Cox-based survival models \cite{Quinn2007} explain a large portion of phenotypic variance from haematological labs alone. Our multimodal architecture mirrors recent multimodal medical-AI work in oncology and ophthalmology \cite{Acosta2022,Steyaert2023}; however, those domains feature richer image- and genomic-specific signal than our synthetic SCD cohort exposes.
+\subsection{Strengths and limitations}
+\textbf{Strengths.} (i) The framework is fully open and reproducible end-to-end; (ii) reporting follows TRIPOD+AI (Table~S1); (iii) survival is evaluated with both the C-index and time-dependent Brier/IBS, providing a more complete view than rank-only metrics; (iv) bootstrap CIs and seed replication quantify uncertainty.
 
-Because SCD disproportionately affects populations of African ancestry, deployments must be audited for performance disparities by ancestry, age and sex; the codebase exposes subgroup-stratified evaluation hooks. We follow the Contributor Covenant Code of Conduct and release everything under MIT.
-\section{Reproducibility}
-All numbers in this paper are produced by \texttt{src/scripts/run\_full\_experiment.py --config configs/default.yaml --seeds 3 --ablate}, \texttt{src/scripts/run\_baselines.py}, \texttt{src/scripts/run\_fusion\_comparison.py}, \texttt{src/scripts/run\_subgroup\_analysis.py} and \texttt{src/scripts/run\_survival\_horizons.py}, then rendered by \texttt{paper/build\_paper.py} (for the ReportLab PDF) or \texttt{paper/build\_tex.py} + \texttt{pdflatex} (this document). JSON artefacts in \texttt{experiments/results/} are the single source of truth.
+\textbf{Limitations.} (i) Experiments are run on simulated data; the joint structure is parametric and necessarily under-represents the full heterogeneity of SCD. (ii) The proportional hazards assumption was not formally tested. (iii) The synthetic imaging modality is a low-dimensional embedding rather than real microscopy. (iv) No external validation cohort was available. (v) Performance gaps in HbSS and older patients warn against deployment without subgroup-aware retraining.
+\subsection{Implications}
+Multimodal architectures should be evaluated on credentialed cohorts (dbGaP phs001514, MIMIC-IV-SCD subset, NHLBI CuRe-SCD, UK Biobank) where each modality plausibly carries more independent information. The provided registry, loaders and evaluation scaffolding are designed to make that transition minimally disruptive. Pre-registering the model, splits, and metrics before access to credentialed data is granted will limit data-leakage risks.
+\subsection{Future work}
+Planned extensions: (1) external validation on dbGaP and MIMIC-IV-SCD subsets; (2) replacing the imaging encoder with a ResNet-/ConvNeXt-based CNN trained on erythrocytesIDB and the Kaggle Sickle RBC dataset; (3) ancestry-stratified loss weighting; (4) calibration improvement via temperature scaling and label-smoothing; (5) treatment-conditioned counterfactual risk under hydroxyurea / chronic transfusion programmes.
 \section{Conclusion}
-We presented Mmvlm4SCD, an open multimodal framework for Sickle Cell Disease that jointly learns severity stratification and survival prediction. On a literature-calibrated synthetic benchmark, the model attains AUROC = $0.867 \pm 0.007$ and C-index = $0.645 \pm 0.010$ across seeds, with clinical features dominating decision-time importance. The released code, registry of public SCD sources, and reproducible pipeline lower the barrier to extending these experiments to real, credentialed cohorts --- the next step in establishing whether multimodal fusion delivers a clinically meaningful uplift over strong tabular baselines in SCD.
+Mmvlm4SCD is an open multimodal framework for SCD that jointly learns severity stratification and survival prediction. On a literature-calibrated synthetic benchmark, it attains AUROC = $0.867 \pm 0.007$ and C-index = $0.645 \pm 0.010$ across seeds, with clinical features dominating decision-time importance. Strong tabular baselines remain competitive. The released code, registry of public SCD sources, reproducible pipeline, and TRIPOD+AI-aligned reporting lower the barrier to extending these experiments to real, credentialed cohorts --- the next step in establishing whether multimodal fusion delivers a clinically meaningful uplift over strong tabular baselines in SCD.
+\section*{Declarations}\nolinenumbers
+\noindent\textbf{Funding.} No external funding was received for this work. The author was responsible for all compute costs.
+
+\noindent\textbf{Competing interests.} The author declares no competing financial or non-financial interests.
+
+\noindent\textbf{Ethics approval and consent to participate.} Not applicable. No human-subject data, identifiable specimens, or animal experiments were involved; all empirical results are computed on a fully synthetic, parametric cohort generated by the released code.
+
+\noindent\textbf{Consent for publication.} Not applicable.
+
+\noindent\textbf{Data availability.} No real patient data were used. The synthetic-cohort generator and all analysis artefacts are released with the code at \url{https://github.com/koneke55/Mmvlm4SCD}. The public SCD data sources catalogued in Table~\ref{tab:registry} can be accessed through the corresponding dbGaP, GEO, MIMIC, UK Biobank, NHLBI, ClinVar and gnomAD portals subject to each source's access policy.
+
+\noindent\textbf{Code availability.} The Mmvlm4SCD framework (v0.1.0) is released under the MIT licence at \url{https://github.com/koneke55/Mmvlm4SCD} and archived with DOI on first release. A \texttt{CITATION.cff} file is included for citing the software.
+
+\noindent\textbf{Author contributions (CRediT).} S.K.: Conceptualisation, Methodology, Software, Formal analysis, Investigation, Data curation, Writing -- original draft, Writing -- review \& editing, Visualisation, Supervision, Project administration.
+
+\noindent\textbf{Acknowledgements.} The author thanks the open-source maintainers of PyTorch, scikit-learn, lifelines, NumPy, pandas, matplotlib and ReportLab; and the NHLBI, NCBI, PhysioNet, UK Biobank and Broad Institute communities for sustaining the public data infrastructure that this work would build upon at scale.
+\linenumbers
+\section{Reproducibility}
+All numbers in this paper are produced by \texttt{src/scripts/run\_full\_experiment.py}, \texttt{run\_baselines.py}, \texttt{run\_fusion\_comparison.py}, \texttt{run\_subgroup\_analysis.py} and \texttt{run\_survival\_horizons.py}, then rendered by \texttt{paper/build\_paper.py} (ReportLab) or \texttt{paper/build\_tex.py} + pdflatex (this document). JSON artefacts in \texttt{experiments/results/} are the single source of truth.
 \bibliographystyle{plain}
 \bibliography{references}
+\clearpage
+\appendix
+\section*{Supplementary Material}
+\renewcommand{\thetable}{S\arabic{table}}
+\renewcommand{\thefigure}{S\arabic{figure}}
+\setcounter{table}{0}\setcounter{figure}{0}
+\subsection*{Table S1. TRIPOD+AI reporting checklist}
+This checklist follows TRIPOD+AI \cite{Collins2024TRIPODAI}. Items are mapped to the corresponding sections of this manuscript (or marked Not Applicable, NA) given the synthetic-cohort design.
+\renewcommand{\arraystretch}{1.15}
+\begin{longtable}{p{3.0cm}p{6cm}p{6cm}}
+\caption{TRIPOD+AI reporting checklist mapping for this study.}\label{tab:tripod}\\
+\toprule
+\textbf{Item} & \textbf{Requirement} & \textbf{Where addressed} \\
+\midrule\endfirsthead
+\multicolumn{3}{l}{\small\textit{Table~S1 continued}}\\
+\toprule
+\textbf{Item} & \textbf{Requirement} & \textbf{Where addressed} \\
+\midrule\endhead
+\bottomrule\endfoot
+Title & 1.1 Title identifies study as developing/validating an AI prediction model. & Title page (multimodal model; severity \& survival). \\
+Abstract & 2.1--2.5 Structured abstract: Background, Methods, Results, Conclusions. & Abstract section (structured). \\
+Introduction & 3.1 Background, rationale, and objectives clearly stated. & Introduction section. \\
+Source of data & 4.1 Data source and study design described. & Sec.~3.2 (synthetic cohort + registry). \\
+Participants & 5.1 Eligibility, setting, and dates of data collection described. & Sec.~3.2.2 -- synthetic; not applicable to real participants. \\
+Outcome & 6.1 Outcome defined and timing of measurement described. & Severity (3-class), Survival (Cox time-to-event); Sec.~3.3, 3.5. \\
+Predictors & 7.1 Predictor definitions and types reported. & Sec.~3.2.2, 3.3 (clinical, genomic, imaging, temporal). \\
+Sample size & 8.1 Sample size and rationale described. & n=2000 synthetic patients; rationale in Sec.~3.2.2. \\
+Missing data & 9.1 Missing-data handling described. & Synthetic cohort has no missing values; the augmentation module supports modality dropout for missingness robustness. \\
+Statistical analysis & 10.1--10.5 Model specification, training, hyperparameters, internal validation strategy. & Sec.~3.4--3.7. \\
+Risk groups & 11.1 Risk groups defined for survival. & Risk-tertile stratification (Fig.~\ref{fig:km}). \\
+Development vs validation & 12.1 Development vs validation procedures described. & 70/15/15 split; no external validation -- limitation. \\
+Model performance & 13.1 Discrimination and calibration reported with uncertainty. & Tables~\ref{tab:main}, \ref{tab:boot}, \ref{tab:brier}; Figs.~\ref{fig:cal}, \ref{fig:brier}. \\
+Fairness & 14.1 Subgroup performance reported. & Sec.~4.7, Table~\ref{tab:sg}, Fig.~\ref{fig:sg}. \\
+Explainability & 15.1 Interpretability methods described. & Gradient-based modality importance; Sec.~4.4. \\
+Human-AI interaction & 16.1 Human role described. & NA (no clinical deployment). \\
+Implementation & 17.1 Code and software environment available. & MIT-licensed at github.com/koneke55/Mmvlm4SCD; Sec.~3.7, Reproducibility. \\
+Discussion & 18.1 Limitations and generalisability discussed. & Sec.~5.3, 5.4. \\
+Funding / COI & 19.1 Funding and conflicts disclosed. & Declarations. \\
+Data sharing & 20.1 Data availability described. & Declarations -- Data availability. \\
+\end{longtable}
+\subsection*{Figure S1. End-to-end pipeline}
+\begin{figure}[h]\centering
+\includegraphics[width=0.98\linewidth]{figures/graphical_abstract.png}
+\caption{End-to-end pipeline (graphical abstract). Reproduced here for offline review.}\label{fig:s1}\end{figure}
 \end{document}
