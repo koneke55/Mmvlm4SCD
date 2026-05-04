@@ -1,0 +1,21 @@
+experiment:
+  name: mmvlm4scd_multimodal_full
+  output_dir: experiments/results
+data:
+  source: synthetic
+  n_patients: 4000
+  timesteps: 24
+  seed: 13
+model:
+  embed_dim: 96
+  fusion: cross
+  dropout: 0.1
+train:
+  epochs: 40
+  batch_size: 128
+  lr: 8.0e-4
+  weight_decay: 1.0e-4
+  alpha: 1.0
+  beta: 0.7
+  early_stop_patience: 10
+  device: cpu

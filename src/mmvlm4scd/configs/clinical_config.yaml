@@ -1,0 +1,20 @@
+experiment:
+  name: mmvlm4scd_clinical_only
+  output_dir: experiments/results
+data:
+  source: synthetic
+  n_patients: 2000
+  timesteps: 24
+  seed: 7
+model:
+  embed_dim: 64
+  fusion: late
+  dropout: 0.1
+train:
+  epochs: 25
+  batch_size: 64
+  lr: 1.0e-3
+  weight_decay: 1.0e-4
+  alpha: 1.0
+  beta: 0.0
+  device: cpu

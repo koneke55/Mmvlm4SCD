@@ -1,0 +1,20 @@
+experiment:
+  name: mmvlm4scd_genomic_focus
+  output_dir: experiments/results
+data:
+  source: synthetic
+  n_patients: 2000
+  timesteps: 24
+  seed: 7
+model:
+  embed_dim: 64
+  fusion: attention
+  dropout: 0.15
+train:
+  epochs: 30
+  batch_size: 64
+  lr: 1.0e-3
+  weight_decay: 1.0e-4
+  alpha: 0.7
+  beta: 0.7
+  device: cpu

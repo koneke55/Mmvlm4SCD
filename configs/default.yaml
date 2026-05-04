@@ -1,0 +1,32 @@
+experiment:
+  name: mmvlm4scd_default
+  output_dir: experiments/results
+
+data:
+  source: synthetic
+  n_patients: 2000
+  timesteps: 24
+  seed: 7
+  split:
+    train: 0.7
+    val: 0.15
+    test: 0.15
+
+model:
+  embed_dim: 64
+  fusion: attention
+  dropout: 0.1
+  num_severity_classes: 3
+
+train:
+  epochs: 30
+  batch_size: 64
+  lr: 1.0e-3
+  weight_decay: 1.0e-4
+  grad_clip: 1.0
+  alpha: 1.0
+  beta: 0.5
+  early_stop_patience: 8
+  select_metric: auroc_ovr
+  device: cpu
+  seed: 0
