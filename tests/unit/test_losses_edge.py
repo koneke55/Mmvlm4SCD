@@ -61,4 +61,4 @@ def test_multitask_loss_alpha_beta_weights_apply():
     total_b, comps_b = multitask_loss(logits, target, risk, time, event,
                                       alpha=0.0, beta=0.0)
     assert torch.isfinite(total_a) and torch.isfinite(total_b)
-    assert float(total_b) == 0.0
+    assert float(total_b.detach()) == 0.0
