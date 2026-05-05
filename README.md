@@ -15,11 +15,11 @@ A multimodal deep learning framework for comprehensive analysis of Sickle Cell D
 
 ## Tests and evaluation stack
 
-Run all tests (52 unit + 1 end-to-end integration smoke):
+Run the full suite (182 tests: 181 unit + 1 `@pytest.mark.slow` integration):
 
 ```bash
-PYTHONPATH=src pytest -q                    # full suite (~12s)
-PYTHONPATH=src pytest -m "not slow" -q      # skip the integration smoke
+PYTHONPATH=src pytest -q                       # full suite (~15-25s on CPU)
+PYTHONPATH=src pytest -m "not slow" -q          # skip integration smoke
 ```
 
 ### Lint and pre-commit
