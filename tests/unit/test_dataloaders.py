@@ -1,6 +1,5 @@
 """Tests for data.dataloaders.make_loaders."""
 
-import numpy as np
 
 from mmvlm4scd.data import StandardPreprocessor, generate_synthetic_cohort
 from mmvlm4scd.data.dataloaders import make_loaders

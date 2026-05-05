@@ -21,7 +21,6 @@ import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
 import numpy as np  # noqa: E402
-import pandas as pd  # noqa: E402
 import torch  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -63,7 +62,7 @@ def main(argv=None):
     p.add_argument("--seed", type=int, default=0)
     p.add_argument("--out", default="experiments/results/subgroups")
     args = p.parse_args(argv)
-    log = get_logger()
+    get_logger()
 
     cohort = generate_synthetic_cohort(SCDSyntheticConfig(n_patients=args.n,
                                                           seed=7))

@@ -10,7 +10,6 @@ import argparse
 import sys
 from pathlib import Path
 
-import numpy as np
 import pandas as pd
 import torch
 
@@ -27,7 +26,7 @@ def main(argv=None):
     p.add_argument("--clinical-csv", required=True)
     p.add_argument("--ckpt", required=False, default=None)
     args = p.parse_args(argv)
-    log = get_logger()
+    get_logger()
 
     cohort = generate_synthetic_cohort(SCDSyntheticConfig(n_patients=512, seed=7))
     pre = StandardPreprocessor().fit(cohort["clinical"])
