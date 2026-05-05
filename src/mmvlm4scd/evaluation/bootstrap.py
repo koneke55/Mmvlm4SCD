@@ -12,6 +12,7 @@ from dataclasses import dataclass
 from typing import Dict, List
 
 import numpy as np
+from sklearn.metrics import roc_auc_score
 
 from ..training.metrics import _softmax, concordance_index_torch
 
@@ -40,38 +41,26 @@ def _f1_macro(y, p) -> float:
 
 
 def _auroc_ovr(y: np.ndarray, proba: np.ndarray) -> float:
-    """Macro one-vs-rest AUROC without sklearn dependency."""
-    classes = np.unique(y)
-    if len(classes) < 2:
+    """Macro one-vs-rest AUROC.
+
+    Delegates to ``sklearn.metrics.roc_auc_score`` so the bootstrap
+    estimate is consistent with the point-estimate AUROC reported by
+    ``training.metrics.severity_metrics``. A previous hand-rolled
+    implementation sorted scores in descending order before applying
+    the Mann-Whitney U formula, which silently returned ``1 - AUROC``.
+    """
+    classes_present = np.unique(y)
+    if classes_present.size < 2:
         return float("nan")
-    aurocs = []
-    for k in range(proba.shape[1]):
-        score = proba[:, k]
-        pos = (y == k).astype(int)
-        if pos.sum() == 0 or pos.sum() == len(y):
-            continue
-        order = np.argsort(-score)
-        ranks = np.empty_like(order, dtype=float)
-        # average ranks for ties
-        s_sorted = score[order]
-        i = 0
-        n = len(score)
-        rank = np.empty(n, dtype=float)
-        while i < n:
-            j = i
-            while j + 1 < n and s_sorted[j + 1] == s_sorted[i]:
-                j += 1
-            avg = (i + j) / 2.0 + 1
-            for k2 in range(i, j + 1):
-                rank[k2] = avg
-            i = j + 1
-        ranks[order] = rank
-        n_pos = pos.sum()
-        n_neg = n - n_pos
-        sum_pos_ranks = ranks[pos == 1].sum()
-        auroc = (sum_pos_ranks - n_pos * (n_pos + 1) / 2.0) / (n_pos * n_neg)
-        aurocs.append(auroc)
-    return float(np.mean(aurocs)) if aurocs else float("nan")
+    try:
+        active = proba[:, classes_present]
+        active = active / active.sum(axis=1, keepdims=True)
+        return float(
+            roc_auc_score(y, active, multi_class="ovr",
+                          average="macro", labels=classes_present)
+        )
+    except ValueError:
+        return float("nan")
 
 
 def bootstrap_metrics(severity_logits: np.ndarray,
