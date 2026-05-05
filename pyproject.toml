@@ -22,7 +22,7 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-dev = ["pytest>=7", "ruff>=0.4"]
+dev = ["pytest>=7", "ruff>=0.4", "pre-commit>=3.5"]
 
 [project.scripts]
 mmvlm4scd-train = "mmvlm4scd.scripts_entry:train_main"

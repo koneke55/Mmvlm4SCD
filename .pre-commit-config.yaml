@@ -1,0 +1,26 @@
+# Run with: `pre-commit install` once, then automatically on every commit.
+# Ruff config lives in pyproject.toml ([tool.ruff]); these hooks just invoke it
+# so contributors get the same diagnostics the CI lint job runs.
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.6.0
+    hooks:
+      - id: trailing-whitespace
+        exclude: ^(experiments/results/|paper/.*\.tex$)
+      - id: end-of-file-fixer
+        exclude: ^(experiments/results/|paper/.*\.tex$)
+      - id: check-yaml
+      - id: check-toml
+      - id: check-merge-conflict
+      - id: check-added-large-files
+        args: [--maxkb=1024]
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.4.10
+    hooks:
+      - id: ruff
+        args: [--fix]
+      - id: ruff-format
+        # Format-check only; do not rewrite. Style stays the project's call.
+        args: [--check]
+        stages: [manual]

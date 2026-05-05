@@ -22,6 +22,28 @@ PYTHONPATH=src pytest -q                    # full suite (~12s)
 PYTHONPATH=src pytest -m "not slow" -q      # skip the integration smoke
 ```
 
+### Lint and pre-commit
+
+The project uses [ruff](https://docs.astral.sh/ruff/) for linting; configuration
+lives in `pyproject.toml` under `[tool.ruff]`. CI runs `ruff check src tests
+scripts` on every push and pull request.
+
+To get the same diagnostics locally before committing, install
+[pre-commit](https://pre-commit.com/) once:
+
+```bash
+pip install -e .[dev]
+pre-commit install
+```
+
+After that, every `git commit` runs ruff (with `--fix`), trailing-whitespace
+trimming, end-of-file fixing, and the standard YAML/TOML/merge-conflict checks.
+Run all hooks against the whole tree at any time with:
+
+```bash
+pre-commit run --all-files
+```
+
 Coverage spans:
 
 - **Data** (`tests/unit/test_data.py`, `test_dataloaders.py`): registry, synthetic cohort shapes, preprocessor round-trip, train/val/test split partitioning, DataLoader keys/dtypes/drop_last semantics.
