@@ -44,6 +44,39 @@ Standard convention: H1, H2 are primary; H3+ are secondary.
   This hypothesis is exploratory and *will not* be used to declare
   the model "fair"; a wider gap is a publishable negative finding.
 
+### Geographic-transfer hypotheses (added because Africa + South Asia carry the global SCD burden)
+
+* **H7 (Africa-trained -> Africa-evaluated, primary).** A multimodal
+  model trained on the SickleInAfrica / SPARCO Registry plus the
+  Muhimbili Sickle Cohort and evaluated on a held-out Africa-side
+  partition (held-out site or held-out time window) achieves macro
+  AUROC at least 0.80 and Harrell C-index at least 0.65, both with
+  the lower bound of the 95% bootstrap CI strictly above the
+  Sebastiani / Quinn clinical-only baselines re-estimated on the same
+  cohort.
+* **H8 (South-Asia-trained -> South-Asia-evaluated, primary).** A
+  multimodal model trained on ICMR-NIRTH Jabalpur (and, where
+  available, AIIMS / MGM Indore) and evaluated on the
+  Lok-Biradari-Prakalp / Hemalkasa community-clinic cohort achieves
+  macro AUROC at least 0.75 and C-index at least 0.62. Lower thresholds
+  reflect the smaller, more heterogeneous Indian cohorts.
+* **H9 (cross-region transfer, exploratory).** A model trained on
+  Africa-side cohorts and evaluated on South-Asia-side cohorts (and
+  vice versa) shows macro-AUROC degradation >= 0.05 versus
+  within-region evaluation. This hypothesis is **directional toward a
+  positive degradation**: we expect transfer to be hard and we want
+  the manuscript to honestly report it.
+* **H10 (haplotype stratification).** Per-haplotype subgroup
+  performance (Benin vs Bantu/CAR vs Senegal vs Cameroon vs
+  Arab-Indian) shows max-min AUROC gap >= 0.05; this is reported
+  rather than tested for "fairness" because the haplotypes carry
+  genuine biological signal.
+* **H11 (care-setting confounding).** Stratifying performance by
+  `CareSettingTier` (TERTIARY_HIC / TERTIARY_LMIC / SECONDARY_LMIC /
+  COMMUNITY) reveals at least 0.05 AUROC variation, indicating that
+  any naive global metric conflates "the disease is mild" with
+  "treatment access is poor."
+
 ## 2. Population
 
 * **Inclusion.** Patients with an SCD diagnosis confirmed by ICD-10
@@ -69,6 +102,31 @@ Standard convention: H1, H2 are primary; H3+ are secondary.
   the cohort cut-off date or last encounter.
 * **Secondary outcomes (exploratory).** Time to first VOC after
   index; time to first stroke; transfusion-free survival.
+
+## 3.bis Geographic-priority data plan
+
+Training prioritises Africa- and South-Asia-anchored cohorts;
+North-American and European cohorts (MIMIC-IV, dbGaP SCDIC,
+Walk-PHaSST, UK Biobank, NHLBI TOPMed) are **reference** cohorts used
+for transferability analysis only. Specifically:
+
+* **Primary training cohort.** SickleInAfrica / SPARCO Registry
+  (Tanzania + Ghana + Nigeria + Cameroon + Mali) joined with the
+  Muhimbili Sickle Cohort (Tanzania) and the ICMR-NIRTH Jabalpur
+  tribal cohort (India). Patients are tagged with `Region`,
+  `country`, `HbHaplotype`, `CareSettingTier` and
+  `HydroxyureaAccess` per the unified harmonization schema.
+* **Primary external-validation cohort.** A held-out site of
+  SickleInAfrica/SPARCO that was not used in training, joined with
+  the Lok Biradari Prakalp (Hemalkasa) community-clinic cohort.
+* **Reference external cohorts.** dbGaP SCDIC, Walk-PHaSST and the
+  UK Biobank SCD subset, evaluated as transferability checks; their
+  results are reported separately and **never** as the headline
+  metrics.
+* **Pediatric stratum.** CONSA newborn-screening data drives a
+  separate pediatric severity model evaluated at 1-, 2- and
+  5-year horizons; reported alongside the adult model with explicit
+  age-band tagging.
 
 ## 4. Predictors
 

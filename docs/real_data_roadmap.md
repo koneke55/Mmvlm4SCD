@@ -30,6 +30,16 @@ data unlock four irreplaceable scientific milestones:
    prospective evaluation on real data; this plan is the first step
    toward that pathway, not a substitute for it.
 
+> **Geographic priority.** Sub-Saharan Africa and South Asia carry the
+> overwhelming majority of the global SCD burden. The plan below puts
+> those regions at the centre of training and primary evaluation;
+> North-American and European cohorts (MIMIC-IV, dbGaP, UK Biobank,
+> TOPMed) are used as **reference** cohorts for transferability
+> analysis, not as the primary training set.
+> See `docs/africa_south_asia_focus.md` for the geographic addendum
+> covering epidemiology, governance frameworks, equity-aware
+> evaluation, and capacity-building commitments.
+
 ## 1. Guiding principles
 
 1. **Pre-register, then access.** Lock the model spec, splits and
@@ -50,51 +60,104 @@ data unlock four irreplaceable scientific milestones:
 
 ## 2. Data-source hierarchy
 
-The 14 sources catalogued in `src/mmvlm4scd/data/registry.py` fall
-into three access tiers. Phasing follows the path of least friction.
+The 26+ sources catalogued in `src/mmvlm4scd/data/registry.py` are
+organised first by **geographic priority**, then by access tier.
+Phasing follows the geographic priority, not the legacy
+"start with what's easiest" path.
 
-### Tier A -- Open (no application required)
+### Tier A -- Open foundations (no application required)
 
-| Source | Modality | Volume | Use |
+| Source | Modality | Region | Use |
 |---|---|---|---|
-| `erythrocytesIDB` | imaging | ~600 RBC images | CNN imaging encoder pretraining + benchmark |
-| `Kaggle Sickle RBC` | imaging | ~10k patches | CNN augmentation set |
-| `GEO GSE53441` | transcriptomics | ~30 SCD vs control | feature engineering for genomic encoder |
-| `GEO GSE35007` | transcriptomics | pediatric SCD | external transcriptomic validation |
-| `ClinVar -- HBB` | variants | curated set | ground-truth pathogenic-variant labels |
-| `gnomAD v4 -- HBB` | variants | population | allele frequencies for polygenic-like score calibration |
-| `WHO SCD profiles` | epidemiology | country-level | sanity-check synthetic prevalences |
-| `GBD 2021 SCD` | epidemiology | country-level | re-calibrate Weibull hazard parameters |
+| `erythrocytesIDB` | imaging | global | CNN imaging encoder pretraining + benchmark |
+| `Kaggle Sickle RBC` | imaging | global | CNN augmentation set |
+| `GEO GSE53441` / `GSE35007` | transcriptomics | global | feature engineering, pediatric validation |
+| `ClinVar -- HBB` | variants | global | ground-truth pathogenic-variant labels |
+| `gnomAD v4 -- HBB` | variants | global | allele frequencies for polygenic-like score calibration |
+| `MalariaGEN HBB` | population genomics | **Africa** | HbS / HbC / HbE allele frequencies on African populations; haplotype assignment input |
+| `WHO SCD profiles` / `GBD 2021 SCD` | epidemiology | global | re-calibrate Weibull hazard parameters; sanity-check prevalences |
 
-### Tier B -- Registered (free credential, online training)
+### Tier B -- Sub-Saharan Africa (registered)
 
-| Source | Modality | Volume | Use |
+| Source | Modality | Country | Use |
 |---|---|---|---|
-| `MIMIC-IV` | clinical, temporal | full ICU/ED, D57.* subset ~1.5k SCD encounters | longitudinal labs/vitals encoder; first real Cox survival fit |
-| `NHLBI CuRe-SCD Data Hub` | multimodal | longitudinal multi-site | flagship multimodal cohort |
+| `Muhimbili Sickle Cohort (MSC)` | multimodal | Tanzania | flagship East-African cohort with longitudinal phenotype + biospecimen archive |
+| `CONSA newborn screening` | clinical, pediatric | 9-country network | under-5 SCD survival + intervention-exposure data unique to SSA |
 
-PhysioNet credentialed-researcher status (CITI training + signed DUA)
-is sufficient for MIMIC-IV.
+### Tier B -- South Asia (registered)
 
-### Tier C -- DUA-required (months-long applications)
-
-| Source | Modality | Volume | Use |
+| Source | Modality | Country | Use |
 |---|---|---|---|
-| `dbGaP phs001514` (SCDIC Registry) | clinical | ~2.5k patients | severity targets, transfusion / hydroxyurea outcomes |
-| `dbGaP phs001599` (Walk-PHaSST) | clinical, hemodynamic | ~720 adults | survival validation cohort |
-| `NHLBI TOPMed` | WGS | tens of thousands | replace polygenic-like block with real PRS |
-| `UK Biobank SCD subset` | multimodal | low N, but rich modalities | external validation |
+| `NSCAEM` (India) | clinical / population screening | India | district-level screening + follow-up across 17 states |
+| `Sickle Cell Society of Sri Lanka` | clinical | Sri Lanka | smaller but well-characterised Sri Lankan cohort |
+
+### Tier B -- North America / Europe (registered, reference role)
+
+| Source | Modality | Country | Use |
+|---|---|---|---|
+| `MIMIC-IV` D57.* subset | clinical, temporal | USA | tertiary-care reference; transferability check, *not* primary training |
+| `NHLBI CuRe-SCD Data Hub` | multimodal | USA | reference multimodal cohort |
+
+### Tier C -- Sub-Saharan Africa (DUA-required)
+
+| Source | Country | Role |
+|---|---|---|
+| `SickleInAfrica / SPARCO Registry` | Tanzania, Ghana, Nigeria, Cameroon, Mali | **flagship multi-site African registry** -- primary external-validation cohort |
+| `LUTH` and `UCH Ibadan` | Nigeria | West-African anchor (largest absolute SCD birth burden globally) |
+| `Komfo Anokye + Korle-Bu` | Ghana | longest-running African newborn-screening + hydroxyurea programme |
+| `H3Africa SCD bioinformatics` | pan-African | African modifier-gene background (BCL11A, HMIP-2, MYB) |
+
+### Tier C -- South Asia (DUA-required)
+
+| Source | Country | Role |
+|---|---|---|
+| `ICMR-NIRTH Jabalpur tribal cohort` | India | Arab-Indian haplotype reference + tribal-population SCD natural history |
+| `AIIMS New Delhi SCD Registry` | India | tertiary-centre Indian phenotype with paired HBB/HBA genotypes |
+| `Lok Biradari Prakalp / Hemalkasa` | India | community-clinic Madia Gond cohort -- canonical low-resource reference |
+| `MGM Indore` | India | treatment-effect heterogeneity (hydroxyurea, pregnancy outcomes) |
+
+### Tier C -- North America / Europe (DUA-required, reference role)
+
+| Source | Country | Role |
+|---|---|---|
+| `dbGaP phs001514` (SCDIC Registry) | USA | reference adult cohort |
+| `dbGaP phs001599` (Walk-PHaSST) | USA | reference survival cohort |
+| `NHLBI TOPMed` | USA | reference WGS / PRS source |
+| `UK Biobank SCD subset` | UK | reference European cohort |
 
 ## 3. Phased timeline
 
 ```
-Phase 0 -- Pre-registration & ethics       (now -- 4 weeks)
-Phase 1 -- Tier A open sources             (months 1-3)
-Phase 2 -- Tier B registered access        (months 2-5)
-Phase 3 -- Tier C DUA-gated cohorts        (months 4-9)
-Phase 4 -- External validation paper       (months 9-12)
-Phase 5 -- Prospective / regulatory        (months 12+)
+Phase 0  -- Pre-registration & ethics             (now -- 4 weeks)
+Phase 1  -- Open foundations (Tier A)             (months 1-3)
+Phase 2A -- Africa Tier-B (registered)            (months 2-6)
+                MUHAS / Muhimbili, CONSA
+Phase 2B -- South Asia Tier-B (registered)        (months 2-6)
+                NSCAEM India, Sri Lanka SCS
+Phase 2C -- US/UK Tier-B reference cohorts        (months 4-7)
+                MIMIC-IV, CuRe-SCD
+Phase 3A -- Africa Tier-C (DUA)                   (months 4-9)
+                SPARCO, LUTH, UCH Ibadan,
+                KATH/Korle-Bu, H3Africa
+Phase 3B -- South Asia Tier-C (DUA)               (months 4-9)
+                ICMR-NIRTH, AIIMS,
+                MGM Indore, Lok Biradari Prakalp
+Phase 3C -- US/UK Tier-C reference (DUA)          (months 6-9)
+                dbGaP SCDIC + Walk-PHaSST,
+                UK Biobank, NHLBI TOPMed
+Phase 4  -- External-validation paper             (months 9-12)
+                Headline cohorts: SPARCO + ICMR-NIRTH
+                Reference cohorts: SCDIC + UK Biobank
+Phase 5  -- Prospective / regulatory              (months 12+)
+                Coordinated with national programmes
+                (NSCAEM India, Tanzania / Ghana / Nigeria MoH)
 ```
+
+The North-America / Europe cohorts deliberately appear **after** the
+Africa and South-Asia cohorts in the phasing: model training
+prioritises the burden regions; US/UK data are reference cohorts used
+to test transferability *out of* Africa / South Asia, not the primary
+endpoint. See `docs/africa_south_asia_focus.md` for the rationale.
 
 ### Phase 0 -- Pre-registration & ethics (4 weeks)
 
@@ -287,9 +350,10 @@ Phase 4 paper is *submission-ready* when **all** the following are true:
 
 ## 8. Pointers
 
+* **Africa + South Asia geographic addendum** -- `docs/africa_south_asia_focus.md`
 * Pre-registration template -- `docs/preregistration.md`
-* IRB / DUA / HIPAA checklist -- `docs/data_access_checklist.md`
-* Schema spec -- `docs/data_harmonization.md`
-* Data registry (machine-readable) -- `src/mmvlm4scd/data/registry.py`
-* Loader stubs -- `src/mmvlm4scd/data/loaders/`
+* IRB / DUA / HIPAA / country-specific ethics checklist -- `docs/data_access_checklist.md`
+* Schema spec (incl. `Region`, `HbHaplotype`, `CareSettingTier`) -- `docs/data_harmonization.md`
+* Data registry (machine-readable, geo-annotated) -- `src/mmvlm4scd/data/registry.py`
+* Loader stubs (one per source, organised by region) -- `src/mmvlm4scd/data/loaders/`
 * Synthetic-paper companion (Q1 LaTeX) -- `paper/paper.tex`

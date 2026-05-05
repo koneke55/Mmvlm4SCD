@@ -82,6 +82,76 @@ statistician / privacy officer for the certification.
 - [ ] Subject-rights handling plan documented (access, erasure,
       restriction). Most large biobanks delegate this to the source.
 
+## 5.bis Sub-Saharan Africa frameworks
+
+For any cohort with `region == "africa"`:
+
+- [ ] Country-level IRB approval secured before any data movement.
+      See the country table below.
+- [ ] **H3Africa Ethics Working Group** guidance reviewed; secondary
+      use is constrained by the original consent.
+- [ ] **CARE Principles for Indigenous Data Governance** (Collective
+      Benefit, Authority to Control, Responsibility, Ethics) explicitly
+      applied; documented in a one-page CARE-alignment memo per
+      cohort.
+- [ ] **African Union Convention on Cyber Security and Personal Data
+      Protection (Malabo Convention)** plus the relevant national
+      data-protection law:
+  - [ ] Nigeria -- NDPR (Nigerian Data Protection Regulation 2019);
+        site-level NHREC + state-level approval.
+  - [ ] Ghana -- Ghana DPA 2012; GHS-ERC + KATH/Korle-Bu site IRBs.
+  - [ ] Tanzania -- NIMR MRCC; Personal Data Protection Act 2022.
+  - [ ] Kenya -- DPA 2019; KEMRI SERU + NACOSTI permit.
+  - [ ] Uganda -- UNCST + local IRB; Data Protection and Privacy
+        Act 2019.
+  - [ ] DRC -- Comite National d'Ethique de la Sante.
+  - [ ] South Africa -- POPIA 2013 + HREC at host university.
+  - [ ] Cameroon -- Comite National d'Ethique de la Recherche pour
+        la Sante Humaine.
+  - [ ] Mali -- Comite Institutionnel d'Ethique du USTTB.
+- [ ] Material Transfer Agreement (MTA) signed if any biospecimen
+      moves; we plan no biospecimen movement, so the MTA path is
+      avoided.
+- [ ] Data Sovereignty contract: patient-level data remain in the
+      country of origin; only aggregate metrics return to the central
+      repository.
+- [ ] Local PI listed as a co-author of any manuscript using the
+      cohort, per ICMJE criteria. If criteria are not met for a
+      named individual, the contributing institution is acknowledged
+      in the affiliations block.
+- [ ] Plain-language project summary translated into the
+      cohort-relevant language(s) (Swahili, Yoruba, Hausa, Igbo,
+      French where applicable) and shared with the local SCD
+      patient-association before data extraction.
+
+## 5.ter South Asia frameworks (India, Sri Lanka, Bangladesh)
+
+For any cohort with `region == "south_asia"`:
+
+- [ ] **ICMR National Ethical Guidelines for Biomedical and Health
+      Research Involving Human Participants** (2017, with 2023 SCD-
+      screening updates) reviewed.
+- [ ] **Indian DBT / BIRAC Guidelines for International Collaborative
+      Biomedical Research** followed; MTAs in place if biospecimens
+      move.
+- [ ] **Digital Personal Data Protection Act 2023** (DPDPA) compliance
+      documented.
+- [ ] Institutional Ethics Committee (IEC) approval at each host
+      institution (ICMR-NIRTH Jabalpur, AIIMS New Delhi, MGM Indore,
+      etc.).
+- [ ] Health Ministry's Screening Committee (HMSC) clearance for
+      international collaboration where applicable.
+- [ ] **Tribal Health Bureau approval** for any work involving
+      Scheduled-Tribe populations (NSCAEM, NIRTH-Jabalpur, Hemalkasa).
+- [ ] **CARE Principles for Indigenous Data Governance** explicitly
+      applied for tribal-population cohorts.
+- [ ] Local-language plain-language project summary (Hindi, Marathi,
+      Gujarati, Telugu, Tamil, Sinhala) shared with patient
+      organisations.
+- [ ] Sri Lanka -- Ethics Review Committee, Ministry of Health.
+- [ ] Bangladesh -- BMRC (Bangladesh Medical Research Council) if /
+      when Bangladeshi cohorts join the registry.
+
 ## 6. Storage and compute
 
 - [ ] Workstation: full-disk encryption (LUKS / FileVault /
