@@ -32,6 +32,8 @@ class DataSourceSpec:
     citation: str
     notes: str
     tags: tuple = field(default_factory=tuple)
+    region: str = "global"  # "africa" | "south_asia" | "north_america" | "europe" | "global"
+    countries: tuple = field(default_factory=tuple)
 
 
 PUBLIC_SCD_DATASETS: List[DataSourceSpec] = [
@@ -44,6 +46,8 @@ PUBLIC_SCD_DATASETS: List[DataSourceSpec] = [
         notes="Cure Sickle Cell Initiative cohort with longitudinal clinical, "
         "genomic and patient-reported outcomes.",
         tags=("longitudinal", "clinical", "genomic"),
+        region="north_america",
+        countries=("USA",),
     ),
     DataSourceSpec(
         name="dbGaP phs001514 - Sickle Cell Disease Implementation Consortium",
@@ -53,6 +57,8 @@ PUBLIC_SCD_DATASETS: List[DataSourceSpec] = [
         citation="dbGaP-phs001514",
         notes="SCDIC Registry: pain, transfusion, hydroxyurea adherence outcomes.",
         tags=("registry", "phenotype"),
+        region="north_america",
+        countries=("USA",),
     ),
     DataSourceSpec(
         name="dbGaP phs001599 - Walk-PHaSST",
@@ -62,6 +68,8 @@ PUBLIC_SCD_DATASETS: List[DataSourceSpec] = [
         citation="dbGaP-phs001599",
         notes="Pulmonary hypertension and SCD natural-history cohort.",
         tags=("survival", "hemodynamics"),
+        region="north_america",
+        countries=("USA",),
     ),
     DataSourceSpec(
         name="GEO GSE53441 - Sickle Cell Whole Blood Transcriptome",
@@ -90,6 +98,8 @@ PUBLIC_SCD_DATASETS: List[DataSourceSpec] = [
         notes="ICU and ED encounters; query D57.0/D57.1/D57.4 ICD-10 codes "
         "to extract SCD admissions, labs and vitals time series.",
         tags=("icu", "labs", "temporal"),
+        region="north_america",
+        countries=("USA",),
     ),
     DataSourceSpec(
         name="UK Biobank SCD subset",
@@ -100,6 +110,8 @@ PUBLIC_SCD_DATASETS: List[DataSourceSpec] = [
         notes="ICD-10 D57.* coded participants with imaging, biochemistry, "
         "genotype array and longitudinal follow-up.",
         tags=("biobank", "longitudinal"),
+        region="europe",
+        countries=("UK",),
     ),
     DataSourceSpec(
         name="erythrocytesIDB - Peripheral blood smear sickle cells",
@@ -167,27 +179,239 @@ PUBLIC_SCD_DATASETS: List[DataSourceSpec] = [
         notes="Global Burden of Disease estimates of SCD incidence, mortality, "
         "DALYs by age and region.",
         tags=("epidemiology", "burden"),
+        region="global",
+    ),
+
+    # ----------------------------------------------------------------- #
+    #              Sub-Saharan Africa cohorts and resources             #
+    # ----------------------------------------------------------------- #
+
+    DataSourceSpec(
+        name="SickleInAfrica / SPARCO Registry",
+        modality="multimodal",
+        url="https://sickleinafrica.org/",
+        access="dua-required",
+        citation="Makani2020SickleInAfrica",
+        notes="Sickle Pan-African Research Consortium; harmonised electronic "
+        "registry across Tanzania, Ghana, Nigeria (with Cameroon, Mali "
+        "expanding); flagship African SCD cohort with longitudinal "
+        "clinical, genomic and outcome data.",
+        tags=("registry", "longitudinal", "h3africa"),
+        region="africa",
+        countries=("Tanzania", "Ghana", "Nigeria", "Cameroon", "Mali"),
+    ),
+    DataSourceSpec(
+        name="Muhimbili Sickle Cohort (MSC), Tanzania",
+        modality="multimodal",
+        url="https://www.muhas.ac.tz/",
+        access="registered",
+        citation="Makani2011MuhimbiliCohort",
+        notes="Largest single-site East African SCD cohort (>5,000 patients) "
+        "at Muhimbili University of Health and Allied Sciences; rich "
+        "longitudinal phenotype and biospecimen archive.",
+        tags=("longitudinal", "biorepository", "east_africa"),
+        region="africa",
+        countries=("Tanzania",),
+    ),
+    DataSourceSpec(
+        name="CONSA - Consortium on Newborn Screening in Africa",
+        modality="clinical",
+        url="https://consortiumonnewbornscreeninginafrica.org/",
+        access="registered",
+        citation="CONSA2020",
+        notes="Newborn-screening + early-childhood follow-up across Liberia, "
+        "Ghana, Tanzania, Uganda, DRC, Kenya, Madagascar, Zambia, Nigeria; "
+        "primary source for under-5 SCD survival and intervention data.",
+        tags=("newborn_screening", "pediatric", "survival"),
+        region="africa",
+        countries=("Liberia", "Ghana", "Tanzania", "Uganda", "DRC",
+                   "Kenya", "Madagascar", "Zambia", "Nigeria"),
+    ),
+    DataSourceSpec(
+        name="Lagos University Teaching Hospital (LUTH) SCD Clinic",
+        modality="clinical",
+        url="https://luth.gov.ng/",
+        access="dua-required",
+        citation="Akinyanju1989LUTH",
+        notes="One of the longest-running SCD clinical cohorts in West Africa; "
+        "Nigeria carries the largest absolute SCD birth burden globally.",
+        tags=("west_africa", "longitudinal"),
+        region="africa",
+        countries=("Nigeria",),
+    ),
+    DataSourceSpec(
+        name="University College Hospital (UCH) Ibadan SCD Cohort",
+        modality="clinical",
+        url="https://uch-ibadan.org.ng/",
+        access="dua-required",
+        citation="UCH-Ibadan-SCD",
+        notes="Adult and pediatric SCD outpatient and inpatient records; "
+        "supports HbF modifier and treatment-response studies.",
+        tags=("west_africa", "adult_pediatric"),
+        region="africa",
+        countries=("Nigeria",),
+    ),
+    DataSourceSpec(
+        name="Komfo Anokye / Korle-Bu SCD Programmes, Ghana",
+        modality="clinical",
+        url="https://kathhsp.org/",
+        access="dua-required",
+        citation="Ohene-Frempong2008Ghana",
+        notes="Two flagship Ghanaian programmes integrating newborn "
+        "screening, hydroxyurea provision and longitudinal follow-up; "
+        "anchors of the SickleInAfrica West-Africa node.",
+        tags=("newborn_screening", "hydroxyurea", "west_africa"),
+        region="africa",
+        countries=("Ghana",),
+    ),
+    DataSourceSpec(
+        name="MalariaGEN HBB / globin variant data",
+        modality="genomic",
+        url="https://www.malariagen.net/",
+        access="open",
+        citation="MalariaGEN2014",
+        notes="Open population genomics across West, East and Central African "
+        "cohorts; provides HbS/HbC/HbE allele frequencies and HBB variant "
+        "calls suitable for population-stratified PRS construction.",
+        tags=("population_genetics", "hbs_haplotype"),
+        region="africa",
+        countries=("Nigeria", "Ghana", "Mali", "Tanzania", "Cameroon",
+                   "Burkina_Faso", "Kenya"),
+    ),
+    DataSourceSpec(
+        name="H3Africa SCD bioinformatics archive (H3ABioNet)",
+        modality="genomic",
+        url="https://h3africa.org/",
+        access="dua-required",
+        citation="H3Africa2014",
+        notes="Pan-African genomics consortium; SCD-specific sub-projects "
+        "include modifier-gene studies (BCL11A, HMIP-2, MYB) on African "
+        "haplotype backgrounds.",
+        tags=("modifier_genes", "h3africa"),
+        region="africa",
+        countries=("Nigeria", "Ghana", "Tanzania", "South_Africa",
+                   "Uganda", "Cameroon"),
+    ),
+
+    # ----------------------------------------------------------------- #
+    #                 South Asia cohorts and resources                  #
+    # ----------------------------------------------------------------- #
+
+    DataSourceSpec(
+        name="National Sickle Cell Anaemia Elimination Mission (NSCAEM), India",
+        modality="clinical",
+        url="https://sickle.nhm.gov.in/",
+        access="registered",
+        citation="NSCAEM2023India",
+        notes="Government-of-India 2023 mission targeting screening of ~70 M "
+        "people in 17 SCD-endemic states (predominantly tribal populations); "
+        "integrated district-level registries and point-of-care HemeChip / "
+        "SickleSCAN data.",
+        tags=("population_screening", "tribal", "policy"),
+        region="south_asia",
+        countries=("India",),
+    ),
+    DataSourceSpec(
+        name="ICMR-NIRTH Jabalpur Tribal SCD Cohort",
+        modality="clinical",
+        url="https://nirth.res.in/",
+        access="dua-required",
+        citation="NIRTH-Jabalpur-SCD",
+        notes="National Institute for Research in Tribal Health: longitudinal "
+        "tribal-population SCD cohort across Madhya Pradesh and "
+        "Chhattisgarh; central reference for the Indian Arab-Indian "
+        "haplotype background.",
+        tags=("tribal", "central_india", "arab_indian_haplotype"),
+        region="south_asia",
+        countries=("India",),
+    ),
+    DataSourceSpec(
+        name="AIIMS New Delhi SCD Registry",
+        modality="multimodal",
+        url="https://www.aiims.edu/",
+        access="dua-required",
+        citation="AIIMS-SCD-Registry",
+        notes="Tertiary-centre SCD registry with paired clinical, biochemical "
+        "and HBB/HBA genotype data; supports adult-onset complication "
+        "studies.",
+        tags=("tertiary_centre", "hba_genotype"),
+        region="south_asia",
+        countries=("India",),
+    ),
+    DataSourceSpec(
+        name="Lok Biradari Prakalp (Hemalkasa) SCD Cohort",
+        modality="clinical",
+        url="https://lokbiradariprakalp.org/",
+        access="dua-required",
+        citation="LBPHemalkasa-SCD",
+        notes="Community-based SCD care in the Madia Gond tribal population "
+        "of Gadchiroli (Maharashtra); rare longitudinal record of "
+        "low-resource SCD natural history.",
+        tags=("tribal", "community_clinic", "low_resource"),
+        region="south_asia",
+        countries=("India",),
+    ),
+    DataSourceSpec(
+        name="MGM Medical College Indore SCD Programme",
+        modality="clinical",
+        url="https://www.mgmmcindore.in/",
+        access="dua-required",
+        citation="MGM-Indore-SCD",
+        notes="Western-India regional SCD programme covering screening, "
+        "hydroxyurea provision and pregnancy outcomes; useful for "
+        "treatment-effect heterogeneity studies.",
+        tags=("treatment_response", "pregnancy", "west_india"),
+        region="south_asia",
+        countries=("India",),
+    ),
+    DataSourceSpec(
+        name="Sickle Cell Society of Sri Lanka",
+        modality="clinical",
+        url="https://www.sicklecellsl.org/",
+        access="registered",
+        citation="SCSSL-Cohort",
+        notes="Smaller but well-characterised Sri Lankan cohort; complements "
+        "Indian registries with a distinct ancestry and care-system "
+        "context.",
+        tags=("sri_lanka",),
+        region="south_asia",
+        countries=("Sri_Lanka",),
     ),
 ]
 
 
 def list_sources(modality: str | None = None,
-                 access: str | None = None) -> List[DataSourceSpec]:
-    """Filter the registry by modality and/or access tier."""
+                 access: str | None = None,
+                 region: str | None = None,
+                 country: str | None = None) -> List[DataSourceSpec]:
+    """Filter the registry by modality, access tier, region and/or country."""
     out: Iterable[DataSourceSpec] = PUBLIC_SCD_DATASETS
     if modality is not None:
         out = (s for s in out if s.modality == modality)
     if access is not None:
         out = (s for s in out if s.access == access)
+    if region is not None:
+        out = (s for s in out if s.region == region)
+    if country is not None:
+        out = (s for s in out if country in s.countries)
     return list(out)
 
 
-def to_markdown_table() -> str:
-    rows = ["| Dataset | Modality | Access | Citation | Notes |",
-            "|---|---|---|---|---|"]
+def coverage_by_region() -> dict[str, int]:
+    """Count entries per geographic region. Useful for sanity-checking
+    that the registry is not US/UK-centric."""
+    out: dict[str, int] = {}
     for s in PUBLIC_SCD_DATASETS:
-        rows.append(f"| [{s.name}]({s.url}) | {s.modality} | {s.access} | "
-                    f"{s.citation} | {s.notes} |")
+        out[s.region] = out.get(s.region, 0) + 1
+    return out
+
+
+def to_markdown_table() -> str:
+    rows = ["| Dataset | Region | Modality | Access | Citation | Notes |",
+            "|---|---|---|---|---|---|"]
+    for s in PUBLIC_SCD_DATASETS:
+        rows.append(f"| [{s.name}]({s.url}) | {s.region} | {s.modality} | "
+                    f"{s.access} | {s.citation} | {s.notes} |")
     return "\n".join(rows)
 
 

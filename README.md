@@ -12,6 +12,35 @@ A multimodal deep learning framework for comprehensive analysis of Sickle Cell D
 - **Interpretability**: Built-in model interpretation and visualization tools
 - **Scalable**: Support for distributed training and inference
 - **Clinical Focus**: Domain-specific preprocessing and evaluation metrics
+
+## Tests and evaluation stack
+
+Run all tests (52 unit + 1 end-to-end integration smoke):
+
+```bash
+PYTHONPATH=src pytest -q                    # full suite (~12s)
+PYTHONPATH=src pytest -m "not slow" -q      # skip the integration smoke
+```
+
+Coverage spans:
+
+- **Data** (`tests/unit/test_data.py`, `test_dataloaders.py`): registry, synthetic cohort shapes, preprocessor round-trip, train/val/test split partitioning, DataLoader keys/dtypes/drop_last semantics.
+- **Models** (`test_encoders.py`, `test_models.py`, `test_serialization.py`): per-encoder shapes & gradients, all three fusion strategies, state-dict round-trip preserves outputs.
+- **Training** (`test_trainer.py`, `test_training.py`, `test_losses_edge.py`): trainer reduces loss, deterministic for fixed seed, Cox loss handles tied times / single-event / no-event, Cox is invariant to constant risk shift.
+- **Evaluation** (`test_evaluation.py`, `test_clinical_eval.py`, `test_extras.py`, `test_visualization.py`): bootstrap CIs, Brier/IBS, decision-curve analysis, ECE/MCE, per-class AUROC, sensitivity/specificity, modality-dropout sweep, fairness gap, all visualisation entry-points.
+- **Integration** (`tests/integration/test_pipeline_smoke.py`): end-to-end run of `run_full_experiment.py --smoke` writes the expected artefacts and figures to disk.
+
+Beyond rank metrics, evaluation now includes:
+
+- **Decision-curve analysis** (`evaluation.clinical.decision_curve`)
+- **Calibration error** ECE/MCE (`evaluation.clinical.expected_calibration_error`)
+- **Per-class one-vs-rest AUROC** (`evaluation.clinical.per_class_auroc`)
+- **Sensitivity / specificity at thresholds** (`evaluation.clinical.sens_spec_at_thresholds`)
+- **Test-time modality-dropout robustness sweep** (`evaluation.extras.modality_dropout_sweep`)
+- **Subgroup fairness gap** (`evaluation.extras.fairness_gap`)
+- **External-cohort distribution-shift simulation** (`evaluation.extras.external_cohort_simulation`)
+
+All seven are wired into `src/scripts/run_clinical_eval.py`, which writes JSON artefacts under `experiments/results/<exp>/clinical/` and is read by both the LaTeX (`paper/build_tex.py`) and ReportLab (`paper/build_paper.py`) paper builders.
    
 ## Quick Start   
 ```bash   

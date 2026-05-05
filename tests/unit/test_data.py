@@ -13,6 +13,33 @@ def test_registry_non_empty_and_filters():
     assert all(s.modality == "imaging" for s in imaging)
 
 
+def test_registry_geographic_filters():
+    """Africa + South Asia entries must exist and be filterable."""
+    africa = list_sources(region="africa")
+    south_asia = list_sources(region="south_asia")
+    assert len(africa) >= 5
+    assert len(south_asia) >= 5
+    # Africa + South Asia together must outweigh the US/UK reference set.
+    na_eu = (list_sources(region="north_america")
+             + list_sources(region="europe"))
+    assert len(africa) + len(south_asia) >= len(na_eu)
+    nigeria = list_sources(country="Nigeria")
+    assert len(nigeria) >= 1
+    india = list_sources(country="India")
+    assert len(india) >= 3
+
+
+def test_registry_includes_priority_african_and_indian_sources():
+    """Spot-check the flagship cohorts the roadmap depends on."""
+    names = {s.name for s in PUBLIC_SCD_DATASETS}
+    assert any("SickleInAfrica" in n or "SPARCO" in n for n in names)
+    assert any("Muhimbili" in n for n in names)
+    assert any("CONSA" in n for n in names)
+    assert any("NSCAEM" in n for n in names)
+    assert any("NIRTH" in n for n in names)
+    assert any("AIIMS" in n for n in names)
+
+
 def test_synthetic_cohort_shapes():
     cohort = generate_synthetic_cohort(SCDSyntheticConfig(n_patients=300, seed=0))
     n = len(cohort["clinical"])
