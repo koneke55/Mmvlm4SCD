@@ -65,7 +65,7 @@ All seven are wired into `src/scripts/run_clinical_eval.py`, which writes JSON a
 ## Quick Start   
 ```bash   
 # Clone repository
-git clone https://github.com/yourusername/Mmvlm4SCD.git
+git clone https://github.com/koneke55/Mmvlm4SCD.git
 cd Mmvlm4SCD
 
 # Install dependencies
