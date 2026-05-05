@@ -11,7 +11,7 @@ dependency). It accepts numpy arrays and returns a JSON-friendly dict.
 
 from __future__ import annotations
 
-from typing import Dict, Iterable, List
+from typing import Dict, Iterable
 
 import numpy as np
 from lifelines import KaplanMeierFitter

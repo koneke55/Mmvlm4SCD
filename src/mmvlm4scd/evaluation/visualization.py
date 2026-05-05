@@ -117,7 +117,6 @@ def plot_per_class_roc(probs: np.ndarray, y: np.ndarray, classes,
         if bin_y.sum() == 0 or bin_y.sum() == len(y):
             continue
         order = np.argsort(-probs[:, k])
-        s_sorted = probs[order, k]
         y_sorted = bin_y[order]
         tps = np.cumsum(y_sorted)
         fps = np.cumsum(1 - y_sorted)

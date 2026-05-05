@@ -9,7 +9,6 @@ from __future__ import annotations
 
 from typing import Dict
 
-import torch
 
 
 def gradient_modality_importance(model, loader, device: str = "cpu") -> Dict[str, float]:

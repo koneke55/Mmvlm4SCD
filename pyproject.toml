@@ -38,3 +38,36 @@ addopts = "-q"
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",
 ]
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+extend-exclude = [".venv", "experiments/results", "notebooks"]
+
+[tool.ruff.lint]
+# Curated rule set focused on correctness, not style.
+# - F   : pyflakes (undefined names, unused imports, redefinitions)
+# - E4  : import-related errors
+# - E9  : syntax/runtime errors
+# - E7xx (curated) : comparison, exception and typing footguns
+# - W6  : deprecation warnings
+# Stylistic rules (E701/E702/E703 semicolons, E731 lambda) are
+# intentionally omitted to match the existing matplotlib-heavy code.
+select = [
+    "F",
+    "E4",
+    "E9",
+    "E711",
+    "E712",
+    "E713",
+    "E714",
+    "E721",
+    "E722",
+    "E741",
+    "W6",
+]
+
+[tool.ruff.lint.per-file-ignores]
+# Entry-point scripts mutate sys.path before importing project modules,
+# which is a legitimate exception to E402 (module-level imports).
+"src/scripts/*.py" = ["E402"]
