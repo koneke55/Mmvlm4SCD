@@ -4,8 +4,8 @@ message: "If you use this software, please cite as below."
 authors:
   - family-names: Kone
     given-names: Sambou
-version: 0.1.0
-date-released: 2026-05-04
+version: 0.1.1
+date-released: 2026-05-05
 license: MIT
 repository-code: "https://github.com/koneke55/Mmvlm4SCD"
 type: software
