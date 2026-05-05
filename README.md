@@ -5,8 +5,8 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)    
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)     
         
-A multimodal deep learning framework for comprehensive analysis of Sickle Cell Disease using clinical, genomic, imaging, and temporal data.  
-                                    
+A multimodal deep learning framework for comprehensive analysis of Sickle Cell Disease using clinical, genomic, imaging, and temporal data. **Release v0.1.1** — see [`CHANGELOG.md`](CHANGELOG.md).
+
 ## Features
 - **Multimodal Fusion**: Advanced fusion techniques for heterogeneous data types
 - **Interpretability**: Built-in model interpretation and visualization tools

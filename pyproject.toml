@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "mmvlm4scd"
-version = "0.1.0"
+version = "0.1.1"
 description = "Multimodal model for Sickle Cell Disease severity and survival prediction"
 readme = "README.md"
 license = { file = "LICENSE" }

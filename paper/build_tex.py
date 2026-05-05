@@ -956,7 +956,7 @@ def build():
       r"source's access policy.")
     a("")
     a(r"\noindent\textbf{Code availability.} The Mmvlm4SCD framework "
-      r"(v0.1.0) is released under the MIT licence at "
+      r"(v0.1.1) is released under the MIT licence at "
       r"\url{https://github.com/koneke55/Mmvlm4SCD} and archived with "
       r"DOI on first release. A \texttt{CITATION.cff} file is included "
       r"for citing the software.")
