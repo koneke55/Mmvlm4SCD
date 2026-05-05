@@ -28,6 +28,8 @@ from typing import Any
 import numpy as np
 import pandas as pd
 
+from .dhs_resolve import find_sb113_genotype_column, lower_columns_map, resolve_first_column
+
 # Fallback column names (lowercased keys -> original names resolved at runtime).
 _COL_CANDIDATES: dict[str, tuple[str, ...]] = {
     "age_months": ("hc1",),
@@ -38,28 +40,6 @@ _COL_CANDIDATES: dict[str, tuple[str, ...]] = {
 }
 
 SB113_LABELS = {1: "AA", 2: "AS", 3: "AC", 4: "SC", 5: "SS", 6: "OTHER"}
-
-
-def _lower_map(columns: pd.Index) -> dict[str, str]:
-    return {str(c).lower(): str(c) for c in columns}
-
-
-def _resolve_col(lmap: dict[str, str], *cands: str) -> str | None:
-    for c in cands:
-        if c.lower() in lmap:
-            return lmap[c.lower()]
-    return None
-
-
-def _find_genotype_column(columns: pd.Index) -> str | None:
-    lmap = _lower_map(columns)
-    direct = _resolve_col(lmap, "sb113b")
-    if direct is not None:
-        return direct
-    for key, orig in lmap.items():
-        if "sb113b" in key:
-            return orig
-    return None
 
 
 def severity_from_sb113(code: np.ndarray | pd.Series) -> np.ndarray:
@@ -134,8 +114,8 @@ def build_cohort_from_nigeria_dhs2018_hr(
     read_kwargs = read_kwargs or {}
     df = pd.read_stata(stata_path, **read_kwargs)
 
-    cmap = _lower_map(df.columns)
-    gcn = _find_genotype_column(df.columns)
+    cmap = lower_columns_map(df.columns)
+    gcn = find_sb113_genotype_column(df.columns)
     if gcn is None:
         keys = sorted(cmap.keys())
         raise ValueError(
@@ -143,11 +123,11 @@ def build_cohort_from_nigeria_dhs2018_hr(
             f"Try another export; columns sample: {keys[:25]} ..."
         )
 
-    am = _resolve_col(cmap, *_COL_CANDIDATES["age_months"])
-    wk = _resolve_col(cmap, *_COL_CANDIDATES["weight_kg"])
-    hc = _resolve_col(cmap, *_COL_CANDIDATES["height_cm"])
-    hb_col = _resolve_col(cmap, *_COL_CANDIDATES["hb_g_dl"])
-    sx_col = _resolve_col(cmap, *_COL_CANDIDATES["child_sex"])
+    am = resolve_first_column(cmap, _COL_CANDIDATES["age_months"])
+    wk = resolve_first_column(cmap, _COL_CANDIDATES["weight_kg"])
+    hc = resolve_first_column(cmap, _COL_CANDIDATES["height_cm"])
+    hb_col = resolve_first_column(cmap, _COL_CANDIDATES["hb_g_dl"])
+    sx_col = resolve_first_column(cmap, _COL_CANDIDATES["child_sex"])
 
     work = pd.DataFrame(
         {

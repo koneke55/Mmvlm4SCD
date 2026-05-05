@@ -6,6 +6,11 @@ from .west_africa_open import (
     mean_rs334_maf_west_africa,
 )
 from .nigeria_dhs2018 import build_cohort_from_nigeria_dhs2018_hr
+from .mali_dhs2018 import (
+    anemia_severity_who_child,
+    build_cohort_from_mali_dhs2018_hr,
+    genomic_block_mali_hb_growth,
+)
 from .multimodal_dataset import MultimodalSCDDataset
 from .preprocessing import StandardPreprocessor
 from .harmonization import (PatientRecord, Clinical, Genomic, Imaging,
@@ -27,6 +32,9 @@ __all__ = [
     "fetch_rs334_west_africa_1000g_phase3",
     "mean_rs334_maf_west_africa",
     "build_cohort_from_nigeria_dhs2018_hr",
+    "anemia_severity_who_child",
+    "build_cohort_from_mali_dhs2018_hr",
+    "genomic_block_mali_hb_growth",
     "SCDSyntheticConfig",
     "generate_synthetic_cohort",
     "MultimodalSCDDataset",
