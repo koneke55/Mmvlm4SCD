@@ -1,5 +1,10 @@
 from .registry import PUBLIC_SCD_DATASETS, DataSourceSpec, list_sources
 from .synthetic import SCDSyntheticConfig, generate_synthetic_cohort
+from .west_africa_open import (
+    EnsemblFetchError,
+    fetch_rs334_west_africa_1000g_phase3,
+    mean_rs334_maf_west_africa,
+)
 from .multimodal_dataset import MultimodalSCDDataset
 from .preprocessing import StandardPreprocessor
 from .harmonization import (PatientRecord, Clinical, Genomic, Imaging,
@@ -17,6 +22,9 @@ __all__ = [
     "PUBLIC_SCD_DATASETS",
     "DataSourceSpec",
     "list_sources",
+    "EnsemblFetchError",
+    "fetch_rs334_west_africa_1000g_phase3",
+    "mean_rs334_maf_west_africa",
     "SCDSyntheticConfig",
     "generate_synthetic_cohort",
     "MultimodalSCDDataset",

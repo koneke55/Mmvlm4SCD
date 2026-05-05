@@ -35,10 +35,31 @@ class SCDSyntheticConfig:
     genomic_dim: int = 32
     seed: int = 7
     censor_at_years: float = 25.0   # follow-up ceiling
+    #: When set (e.g. Ensembl mean MAF across 1KG Phase-3 West African
+    #: panels for rs334), SCD genotype-category weights are tilted toward
+    #: higher HbS burden relative to a CEU-like reference MAF. Approximate
+    #: prior for **benchmarking only** — not a substitute for real genotypes.
+    west_africa_rs334_maf: float | None = None
 
 
 _GENOTYPES = ["HbSS", "HbSC", "HbSbeta+", "HbSbeta0"]
 _GENOTYPE_PROB = np.array([0.65, 0.22, 0.08, 0.05])
+
+
+def _genotype_prob_for_config(cfg: SCDSyntheticConfig) -> np.ndarray:
+    p = _GENOTYPE_PROB.astype(np.float64)
+    if cfg.west_africa_rs334_maf is None:
+        return p / p.sum()
+    f = float(np.clip(cfg.west_africa_rs334_maf, 1e-6, 0.5))
+    # Reference allele frequency order-of-magnitude for non-African 1KG EUR.
+    ref = 0.04
+    lift = max(0.0, (f - ref) / ref)
+    scale = np.array(
+        [1.0 + 0.35 * lift, 1.0 + 0.25 * lift, 1.0 + 0.08 * lift, 1.0],
+        dtype=np.float64,
+    )
+    p = p * scale
+    return p / p.sum()
 
 
 def _genotype_severity_offset(g: str) -> float:
@@ -69,7 +90,8 @@ def generate_synthetic_cohort(
     hydroxyurea = (rng.uniform(size=n) < 0.55).astype(int)
     transfusion_history = rng.poisson(lam=1.2, size=n).clip(0, 12)
 
-    genotype_idx = rng.choice(len(_GENOTYPES), size=n, p=_GENOTYPE_PROB)
+    genotype_idx = rng.choice(len(_GENOTYPES), size=n,
+                              p=_genotype_prob_for_config(cfg))
     genotype = np.array(_GENOTYPES)[genotype_idx]
     geno_off = np.array([_genotype_severity_offset(g) for g in genotype])
 

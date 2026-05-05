@@ -2,7 +2,7 @@ import numpy as np
 
 from mmvlm4scd.data import (PUBLIC_SCD_DATASETS, StandardPreprocessor,
                             generate_synthetic_cohort, list_sources)
-from mmvlm4scd.data.synthetic import SCDSyntheticConfig, split_indices
+from mmvlm4scd.data.synthetic import SCDSyntheticConfig, split_indices, _genotype_prob_for_config
 
 
 def test_registry_non_empty_and_filters():
@@ -62,6 +62,25 @@ def test_preprocessor_roundtrip():
     assert x.shape[1] == pre.output_dim
     means = x.mean(axis=0)
     assert np.all(np.abs(means) < 1.0)
+
+
+def test_west_africa_maf_reweights_genotypes():
+    p0 = _genotype_prob_for_config(SCDSyntheticConfig(seed=0))
+    p1 = _genotype_prob_for_config(SCDSyntheticConfig(seed=0, west_africa_rs334_maf=0.13))
+    assert abs(p0.sum() - 1.0) < 1e-9
+    assert abs(p1.sum() - 1.0) < 1e-9
+    assert p1[0] >= p0[0]
+    assert p1[0] + p1[1] >= p0[0] + p0[1]
+
+
+def test_west_africa_maf_more_hbss_in_large_cohort():
+    base = generate_synthetic_cohort(SCDSyntheticConfig(n_patients=8000, seed=42))
+    wa = generate_synthetic_cohort(
+        SCDSyntheticConfig(n_patients=8000, seed=42, west_africa_rs334_maf=0.14)
+    )
+    hbss_base = (base["clinical"]["genotype"].values == "HbSS").mean()
+    hbss_wa = (wa["clinical"]["genotype"].values == "HbSS").mean()
+    assert hbss_wa >= hbss_base
 
 
 def test_split_indices_partition():
