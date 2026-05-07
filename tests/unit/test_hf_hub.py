@@ -1,7 +1,6 @@
 """Hugging Face Hub bundle round-trip (optional ``[hf]`` deps)."""
 
 import json
-from pathlib import Path
 
 import pytest
 import torch

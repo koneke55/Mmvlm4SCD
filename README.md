@@ -13,7 +13,7 @@ A multimodal deep learning framework for comprehensive analysis of Sickle Cell D
 
 ## Tests and evaluation stack
 
-Run the full suite (182 tests: 181 unit + 1 `@pytest.mark.slow` integration):
+Run the full suite (184 tests: 183 unit + 1 `@pytest.mark.slow` integration):
 
 ```bash
 PYTHONPATH=src pytest -q                       # full suite (~15-25s on CPU)
@@ -50,6 +50,8 @@ Coverage spans:
 - **Evaluation** (`test_evaluation.py`, `test_clinical_eval.py`, `test_extras.py`, `test_visualization.py`): bootstrap CIs, Brier/IBS, decision-curve analysis, ECE/MCE, per-class AUROC, sensitivity/specificity, modality-dropout sweep, fairness gap, all visualisation entry-points.
 - **Integration** (`tests/integration/test_pipeline_smoke.py`): end-to-end run of `run_full_experiment.py --smoke` writes the expected artefacts and figures to disk.
 
+- **Hugging Face Hub** (`test_hf_hub.py`): ``config.json`` round-trip + SafeTensors save/load matches forward outputs.
+
 Beyond rank metrics, evaluation now includes:
 
 - **Decision-curve analysis** (`evaluation.clinical.decision_curve`)
@@ -71,7 +73,36 @@ pip install -e .
 
 # Run training
 python src/scripts/train.py --config configs/default.yaml
+```
 
+### Hugging Face Hub ([profile](https://huggingface.co/koneke55))
+
+Mmvlm4SCD is a **custom PyTorch** graph (not `transformers.AutoModel`). To publish checkpoints under your Hub namespace, bundle **`config.json`** + **`model.safetensors`**:
+
+```bash
+pip install -e ".[hf]"
+huggingface-cli login   # or set HF_TOKEN
+
+# Copy and edit dims to match your checkpoint / preprocessor
+cp configs/hf_hub_model_config.example.json my_hub_config.json
+
+mmvlm4scd-push-hf \
+  --checkpoint experiments/checkpoints/best_model.pt \
+  --model-config my_hub_config.json \
+  --repo-id koneke55/mmvlm4scd-<run-name>
+```
+
+Load after install:
+
+```python
+from mmvlm4scd.utils.hf_hub import load_mmvlm_from_hub
+
+model, cfg = load_mmvlm_from_hub("koneke55/mmvlm4scd-<run-name>")
+```
+
+Use **one Hub model repo per checkpoint** (or branches/revisions). Helpers live in `mmvlm4scd.utils.hf_hub`; optional `[hf]` installs `huggingface_hub` and `safetensors`.
+
+```
 # Structure  
 Mmvlm4SCD/
 │
@@ -192,3 +223,4 @@ Mmvlm4SCD/
 ├── CITATION.cff
 ├── pyproject.toml
 └── mkdocs.yml
+```
