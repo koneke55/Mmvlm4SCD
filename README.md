@@ -106,6 +106,9 @@ Mmvlm4SCD/
 │   ├── 02-eda-genomic.ipynb
 │   ├── 03-eda-imaging.ipynb
 │   ├── 04-multimodal-fusion.ipynb
+│   ├── 05_colab_west_africa_experiment.ipynb
+│   ├── 05_colab_nigeria_ndhs2018.ipynb
+│   ├── 06_colab_mali_dhs2018.ipynb
 │   └── README.md
 │
 ├── src/
