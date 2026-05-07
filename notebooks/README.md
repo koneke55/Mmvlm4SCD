@@ -4,6 +4,9 @@ Exploratory analyses for each modality + the multimodal fusion. To keep
 diffs small in version control, please use `jupytext --sync` or strip
 outputs before committing.
 
+**Google Colab:** each notebook includes an **Open in Colab** badge where helpful.
+For free GPU tiers and Runtime tips, follow [Unsloth's Google Colab guide](https://docs.unsloth.ai/get-started/install/google-colab) ([unsloth.ai](https://unsloth.ai)). This project uses vanilla PyTorch + `pip install -e .`; it does **not** require the `unsloth` package—only the Colab workflow notes.
+
 Suggested order:
 
 1. `01-eda-clinical.ipynb` — distributional checks on synthetic clinical
