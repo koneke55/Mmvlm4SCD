@@ -59,8 +59,6 @@ Beyond rank metrics, evaluation now includes:
 - **Test-time modality-dropout robustness sweep** (`evaluation.extras.modality_dropout_sweep`)
 - **Subgroup fairness gap** (`evaluation.extras.fairness_gap`)
 - **External-cohort distribution-shift simulation** (`evaluation.extras.external_cohort_simulation`)
-
-All seven are wired into `src/scripts/run_clinical_eval.py`, which writes JSON artefacts under `experiments/results/<exp>/clinical/` and is read by both the LaTeX (`paper/build_tex.py`) and ReportLab (`paper/build_paper.py`) paper builders.
    
 ## Quick Start   
 ```bash   
