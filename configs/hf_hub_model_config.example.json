@@ -1,0 +1,13 @@
+{
+  "model_type": "mmvlm4scd",
+  "clinical_input_dim": 19,
+  "genomic_input_dim": 32,
+  "imaging_input_dim": 64,
+  "temporal_input_dim": 6,
+  "embed_dim": 64,
+  "num_severity_classes": 3,
+  "fusion": "attention",
+  "dropout": 0.1,
+  "head_hidden_dim": 64,
+  "extra": {}
+}
