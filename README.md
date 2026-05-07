@@ -102,6 +102,7 @@ Mmvlm4SCD/
 │   └── CONTRIBUTING.md
 │
 ├── notebooks/
+│   ├── 00-mmvlm4scd-full-pipeline.ipynb
 │   ├── 01-eda-clinical.ipynb
 │   ├── 02-eda-genomic.ipynb
 │   ├── 03-eda-imaging.ipynb

@@ -4,6 +4,8 @@ Exploratory analyses for each modality + the multimodal fusion. To keep
 diffs small in version control, please use `jupytext --sync` or strip
 outputs before committing.
 
+**All-in-one:** `00-mmvlm4scd-full-pipeline.ipynb` runs Parts 1–6 in one place (single Colab setup, then synthetic EDA, fusion demo, Nigeria NDHS, Mali DHS). The same material also lives in the smaller notebooks below if you prefer shorter sessions.
+
 **Google Colab:** each notebook includes an **Open in Colab** badge where helpful.
 For free GPU tiers and Runtime tips, follow [Unsloth's Google Colab guide](https://docs.unsloth.ai/get-started/install/google-colab) ([unsloth.ai](https://unsloth.ai)). This project uses vanilla PyTorch + `pip install -e .`; it does **not** require the `unsloth` package—only the Colab workflow notes.
 
