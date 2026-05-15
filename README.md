@@ -13,10 +13,10 @@ A multimodal deep learning framework for comprehensive analysis of Sickle Cell D
 
 ## Tests and evaluation stack
 
-Run the full suite (184 tests: 183 unit + 1 `@pytest.mark.slow` integration):
+Run the full suite (200 tests: 199 unit + 1 `@pytest.mark.slow` integration):
 
 ```bash
-PYTHONPATH=src pytest -q                       # full suite (~15-25s on CPU)
+PYTHONPATH=src pytest -q                       # full suite (~30s on CPU)
 PYTHONPATH=src pytest -m "not slow" -q          # skip integration smoke
 ```
 
@@ -50,7 +50,7 @@ Coverage spans:
 - **Evaluation** (`test_evaluation.py`, `test_clinical_eval.py`, `test_extras.py`, `test_visualization.py`): bootstrap CIs, Brier/IBS, decision-curve analysis, ECE/MCE, per-class AUROC, sensitivity/specificity, modality-dropout sweep, fairness gap, all visualisation entry-points.
 - **Integration** (`tests/integration/test_pipeline_smoke.py`): end-to-end run of `run_full_experiment.py --smoke` writes the expected artefacts and figures to disk.
 
-- **Hugging Face Hub** (`test_hf_hub.py`): ``config.json`` round-trip + SafeTensors save/load matches forward outputs.
+- **Hugging Face Hub** (`test_hf_hub.py`): Hub JSON round-trip, checkpoint→config inference, SafeTensors save/load vs forward pass.
 
 Beyond rank metrics, evaluation now includes:
 
@@ -78,6 +78,16 @@ python src/scripts/train.py --config configs/default.yaml
 ### Hugging Face Hub ([profile](https://huggingface.co/koneke55))
 
 Mmvlm4SCD is a **custom PyTorch** graph (not `transformers.AutoModel`). To publish checkpoints under your Hub namespace, bundle **`config.json`** + **`model.safetensors`**:
+
+Infer Hub JSON from an existing ``.pt`` ``state_dict`` (dimensions + fusion kind):
+
+```bash
+mmvlm4scd-infer-hf-config \
+  --checkpoint experiments/checkpoints/best_model.pt \
+  --out configs/hf_hub_best_model.pt.json
+```
+
+Then push as above with ``--model-config configs/hf_hub_best_model.pt.json``. A checked-in example for the default synthetic checkpoint is ``configs/hf_hub_best_model.pt.json``.
 
 ```bash
 pip install -e ".[hf]"

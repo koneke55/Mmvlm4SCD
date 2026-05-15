@@ -28,6 +28,62 @@ CONFIG_NAME = "config.json"
 WEIGHTS_NAME = "model.safetensors"
 
 
+def infer_hub_dict_from_state_dict(state_dict: dict[str, torch.Tensor],
+                                   *,
+                                   checkpoint_path: str | None = None,
+                                   dropout: float = 0.1,
+                                   ) -> dict[str, Any]:
+    """Infer a Hub ``config.json`` payload from a flat ``state_dict``.
+
+    Matches :class:`MultimodalSCDModel` layout (encoder MLP / GRU / fusion heads).
+    ``dropout`` is not stored in weights; default ``0.1`` matches ``configs/default.yaml``.
+    """
+    keys = list(state_dict.keys())
+
+    def _fusion() -> Literal["attention", "cross", "late"]:
+        if any(
+            k.startswith(("fusion.cls", "fusion.encoder", "fusion.modality_pos"))
+            for k in keys
+        ):
+            return "attention"
+        if any(k.startswith("fusion.attn") for k in keys):
+            return "cross"
+        if any(k.startswith("fusion.proj") for k in keys):
+            return "late"
+        raise ValueError(
+            "Cannot infer fusion type from state_dict keys (unexpected fusion module)."
+        )
+
+    clinical_in = int(state_dict["clinical_enc.net.0.weight"].shape[1])
+    imaging_in = int(state_dict["imaging_enc.net.0.weight"].shape[1])
+    variant_span = int(state_dict["genomic_enc.variant_proj.0.weight"].shape[1])
+    pgs_in = int(state_dict["genomic_enc.pgs_proj.0.weight"].shape[1])
+    genomic_in = variant_span + pgs_in
+    temporal_in = int(state_dict["temporal_enc.gru.weight_ih_l0"].shape[1])
+
+    head_hid = int(state_dict["severity_head.0.weight"].shape[0])
+    embed_dim = int(state_dict["severity_head.0.weight"].shape[1])
+    n_cls = int(state_dict["severity_head.3.weight"].shape[0])
+
+    extra: dict[str, Any] = {}
+    if checkpoint_path:
+        extra["inferred_from"] = checkpoint_path
+
+    return {
+        "model_type": MODEL_TYPE,
+        "clinical_input_dim": clinical_in,
+        "genomic_input_dim": genomic_in,
+        "imaging_input_dim": imaging_in,
+        "temporal_input_dim": temporal_in,
+        "embed_dim": embed_dim,
+        "num_severity_classes": n_cls,
+        "fusion": _fusion(),
+        "dropout": float(dropout),
+        "head_hidden_dim": head_hid,
+        "extra": extra,
+    }
+
+
 def _require_hf_deps() -> tuple[Any, Any]:
     try:
         from huggingface_hub import hf_hub_download

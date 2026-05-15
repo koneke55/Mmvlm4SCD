@@ -30,6 +30,7 @@ mmvlm4scd-train = "mmvlm4scd.scripts_entry:train_main"
 mmvlm4scd-evaluate = "mmvlm4scd.scripts_entry:evaluate_main"
 mmvlm4scd-experiment = "mmvlm4scd.scripts_entry:experiment_main"
 mmvlm4scd-push-hf = "mmvlm4scd.cli.hf_hub_push:main"
+mmvlm4scd-infer-hf-config = "mmvlm4scd.cli.infer_hf_config:main"
 
 [tool.setuptools.packages.find]
 where = ["src"]

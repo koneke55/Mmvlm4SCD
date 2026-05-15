@@ -14,10 +14,34 @@ pytest.importorskip("huggingface_hub")
 
 from mmvlm4scd.utils.hf_hub import (  # noqa: E402
     hub_dict_to_model_config,
+    infer_hub_dict_from_state_dict,
     load_mmvlm_local,
     model_config_to_hub_dict,
     save_mmvlm_pretrained,
 )
+
+
+def test_infer_hub_dict_roundtrip_matches_model():
+    cohort = generate_synthetic_cohort(SCDSyntheticConfig(n_patients=8, seed=0))
+    pre = StandardPreprocessor().fit(cohort["clinical"])
+    x = pre.transform(cohort["clinical"])
+    cfg = ModelConfig(
+        clinical_input_dim=x.shape[1],
+        genomic_input_dim=cohort["genomic"].shape[1],
+        imaging_input_dim=cohort["imaging"].shape[1],
+        temporal_input_dim=cohort["temporal"].shape[2],
+        embed_dim=48,
+        fusion="late",
+        dropout=0.05,
+        head_hidden_dim=72,
+    )
+    m = MultimodalSCDModel(cfg)
+    raw = infer_hub_dict_from_state_dict(
+        m.state_dict(),
+        dropout=cfg.dropout,
+    )
+    got = hub_dict_to_model_config(raw)
+    assert got == cfg
 
 
 def test_hub_config_json_roundtrip():
