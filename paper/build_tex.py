@@ -105,7 +105,11 @@ def _preamble(L):
     a(r"\usepackage{setspace}")
     a(r"\usepackage{tcolorbox}")
     a(r"\usepackage{longtable}")
+    a(r"\usepackage{float}")
+    a(r"\usepackage{placeins}")
     a(r"\tcbuselibrary{breakable,skins}")
+    a(r"\setlength{\textfloatsep}{12pt}")
+    a(r"\setlength{\floatsep}{12pt}")
     a(r"\definecolor{accent}{HTML}{1A3D63}")
     a(r"\definecolor{accent2}{HTML}{7F3D63}")
     a(r"\definecolor{boxbg}{HTML}{F4F8FC}")
@@ -134,11 +138,12 @@ def _title_block(L):
       r"\\[2pt] A Quantitative Study of Severity Stratification and "
       r"Survival Prediction}")
     a(r"\author[1]{Sambou Kone\thanks{Correspondence: "
-      r"\href{https://github.com/koneke55}{github.com/koneke55}.}}")
-    a(r"\affil[1]{Independent researcher \textperiodcentered{} Mmvlm4SCD "
-      r"project. Code: "
-      r"\href{https://github.com/koneke55/Mmvlm4SCD}"
-      r"{github.com/koneke55/Mmvlm4SCD}}")
+      r"\href{mailto:20btrmt034@jainuniversity.ac.in}"
+      r"{20btrmt034@jainuniversity.ac.in}.}}")
+    a(r"\affil[1]{Email: "
+      r"\href{mailto:20btrmt034@jainuniversity.ac.in}"
+      r"{20btrmt034@jainuniversity.ac.in}\\"
+      r"Department: Electronics and Communications Engineering}")
     a(r"\date{" + date.today().isoformat() + r"}")
     a("")
     a(r"\begin{document}")
@@ -154,7 +159,7 @@ def _highlights(L):
     a = L.append
     a(r"\begin{highlights}")
     a(r"\begin{itemize}[leftmargin=1.2em,itemsep=2pt,topsep=2pt]")
-    a(r"\item Open multimodal architecture (\textit{Mmvlm4SCD}) for joint "
+    a(r"\item Multimodal architecture (\textit{Mmvlm4SCD}) for joint "
       r"severity classification and Cox-style survival prediction in Sickle "
       r"Cell Disease.")
     a(r"\item Curated registry of 14 public SCD data sources spanning "
@@ -183,8 +188,8 @@ def _structured_abstract(L, summary, logreg, cox, n_seeds, auroc_m, auroc_s,
       r"projecting long-term survival. Existing risk scores compress "
       r"clinical, genomic, imaging and longitudinal information into "
       r"hand-crafted formulae and seldom integrate multimodal data.")
-    a(r"\noindent\textbf{Methods.} We developed \textit{Mmvlm4SCD}, an "
-      r"open multimodal deep-learning framework with modality-specific "
+    a(r"\noindent\textbf{Methods.} We developed \textit{Mmvlm4SCD}, a "
+      r"multimodal deep-learning framework with modality-specific "
       r"encoders for clinical tabular features, HBB variant + polygenic "
       r"signals, peripheral-blood-smear imaging embeddings, and monthly "
       r"vitals/labs trajectories, fused via attention and trained "
@@ -210,10 +215,11 @@ def _structured_abstract(L, summary, logreg, cox, n_seeds, auroc_m, auroc_s,
       r"motivating ancestry- and age-aware modelling.")
     a(r"\noindent\textbf{Conclusions.} On the synthetic benchmark, "
       r"strong tabular baselines remain competitive with multimodal deep "
-      r"learning; the released code, registry of public SCD sources, "
+      r"learning; the registry of public SCD sources, "
       r"reproducible pipeline, and TRIPOD+AI-aligned reporting lower the "
       r"barrier to assessing whether multimodal fusion delivers a "
-      r"clinically meaningful uplift on real, credentialed SCD cohorts.")
+      r"clinically meaningful uplift on real, credentialed SCD cohorts. "
+      r"Source code is available upon request.")
     a(r"")
     a(r"\noindent\textbf{Keywords.} sickle cell disease; multimodal "
       r"learning; survival analysis; severity stratification; clinical "
@@ -295,8 +301,8 @@ def build():
 
     # Graphical abstract figure (front-matter)
     if (ROOT / "paper" / "figures" / "graphical_abstract.png").exists():
-        a(r"\begin{figure}[h!]\centering")
-        a(r"\includegraphics[width=0.98\linewidth]"
+        a(r"\begin{figure}[htbp]\centering")
+        a(r"\includegraphics[width=0.8\linewidth]"
           r"{figures/graphical_abstract.png}")
         a(r"\caption*{\textbf{Graphical abstract.} Mmvlm4SCD fuses four "
           r"modality-specific encoders into a shared embedding via "
@@ -309,6 +315,8 @@ def build():
     _structured_abstract(L, summary, logreg, cox, n_seeds, auroc_m, auroc_s,
                          c_m, c_s, n_patients)
     _key_points(L)
+    a(r"\FloatBarrier")
+    a("")
 
     # 1. Introduction --------------------------------------------------
     a(r"\section{Introduction}")
@@ -333,8 +341,8 @@ def build():
       "tasks: \\textbf{(i)} ordinal severity stratification and "
       "\\textbf{(ii)} long-horizon survival prediction.")
     a("")
-    a("This paper makes three contributions. \\textbf{(1)} An open, "
-      "reproducible multimodal architecture --- \\textit{Mmvlm4SCD} --- "
+    a("This paper makes three contributions. \\textbf{(1)} A reproducible "
+      "multimodal architecture --- \\textit{Mmvlm4SCD} --- "
       "with pluggable encoders for clinical, genomic, imaging and temporal "
       "data, three fusion strategies, and a dual-task head trained with "
       "cross-entropy + Cox partial likelihood. \\textbf{(2)} A literature-"
@@ -371,6 +379,7 @@ def build():
       "sickled erythrocytes from normal cells on peripheral-blood-smear "
       "images \\cite{Xu2017,Alzubaidi2020}; we treat such CNN outputs as "
       "imaging embeddings within fusion.")
+    a(r"\FloatBarrier")
 
     # 3. Materials and Methods ----------------------------------------
     a(r"\section{Materials and Methods}")
@@ -389,7 +398,7 @@ def build():
       "(Table~\\ref{tab:registry}). The canonical machine-readable list "
       "lives in \\texttt{src/mmvlm4scd/data/registry.py}.")
     a("")
-    a(r"\begin{table}[t]\centering")
+    a(r"\begin{table}[htbp]\centering")
     a(r"\caption{Public SCD data sources tracked by the Mmvlm4SCD registry. "
       r"Access tiers: \textit{open}, \textit{registered}, "
       r"\textit{dua-required} (Data Use Agreement).}\label{tab:registry}")
@@ -477,15 +486,15 @@ def build():
       "given the descriptive nature of the subgroup analyses.")
 
     a(r"\subsection{Software and reproducibility}")
-    a("All code is released under MIT at "
-      "\\url{https://github.com/koneke55/Mmvlm4SCD} and includes (a) the "
-      "synthetic-cohort generator, (b) modality encoders, (c) fusion "
-      "modules, (d) Cox + cross-entropy multitask trainer, (e) "
-      "evaluation utilities, (f) the data registry, and (g) the LaTeX "
-      "and ReportLab paper builders. The numbers in this manuscript are "
+    a("The implementation comprises (a) the synthetic-cohort generator, "
+      "(b) modality encoders, (c) fusion modules, (d) Cox + cross-entropy "
+      "multitask trainer, (e) evaluation utilities, (f) the data registry, "
+      "and (g) the LaTeX and ReportLab paper builders. Source code is "
+      "available upon request. The numbers in this manuscript are "
       "regenerated end-to-end by running the experiment scripts listed "
       "in the Reproducibility section below; JSON artefacts in "
       "\\texttt{experiments/results/} are the single source of truth.")
+    a(r"\FloatBarrier")
 
     # 4. Results -------------------------------------------------------
     a(r"\section{Results}")
@@ -495,7 +504,7 @@ def build():
       "Table~\\ref{tab:main}.")
 
     # Main results table
-    a(r"\begin{table}[t]\centering")
+    a(r"\begin{table}[htbp]\centering")
     a(r"\caption{Held-out test performance over " + str(n_seeds) +
       r" seeds. Mmvlm4SCD scores reported as mean $\pm$ standard "
       r"deviation.}\label{tab:main}")
@@ -519,7 +528,7 @@ def build():
         a("Non-parametric 95\\% bootstrap CIs on the held-out test set "
           "(Table~\\ref{tab:boot}) localise the attention-fusion "
           "performance.")
-        a(r"\begin{table}[t]\centering")
+        a(r"\begin{table}[htbp]\centering")
         a(r"\caption{Bootstrap (B=300) 95\% percentile CIs.}\label{tab:boot}")
         a(r"\small")
         a(r"\begin{tabular}{lccc}")
@@ -539,7 +548,7 @@ def build():
     a("Setting one modality at a time to zeros at both train and test time "
       "(Table~\\ref{tab:ablation}) localises each modality's marginal "
       "contribution.")
-    a(r"\begin{table}[t]\centering")
+    a(r"\begin{table}[htbp]\centering")
     a(r"\caption{Per-modality ablation on the held-out test set."
       r"}\label{tab:ablation}")
     a(r"\small")
@@ -555,7 +564,7 @@ def build():
     # Fusion comparison
     if fusion is not None:
         a(r"\subsection{Fusion-strategy comparison}")
-        a(r"\begin{table}[t]\centering")
+        a(r"\begin{table}[htbp]\centering")
         a(r"\caption{Fusion-strategy comparison (3 seeds each)."
           r"}\label{tab:fusion}")
         a(r"\small")
@@ -570,8 +579,8 @@ def build():
               f"${d['mean_c_index']:.3f}\\pm{d['std_c_index']:.3f}$ & "
               f"{d['mean_accuracy']:.3f} & {d['mean_f1_macro']:.3f} \\\\")
         a(r"\bottomrule\end{tabular}\end{table}")
-        a(r"\begin{figure}[t]\centering")
-        a(r"\includegraphics[width=0.85\linewidth]"
+        a(r"\begin{figure}[htbp]\centering")
+        a(r"\includegraphics[width=0.8\linewidth]"
           r"{../experiments/results/fusion_comparison/fusion_bar.png}")
         a(r"\caption{Severity AUROC (left) and survival C-index (right) by "
           r"fusion strategy.}\label{fig:fusion}\end{figure}")
@@ -587,33 +596,33 @@ def build():
       f"({importance['temporal']:.2f}).")
 
     # Standard figures
-    a(r"\begin{figure}[t]\centering")
-    a(r"\includegraphics[width=0.95\linewidth]{" + fig_base +
+    a(r"\begin{figure}[htbp]\centering")
+    a(r"\includegraphics[width=0.8\linewidth]{" + fig_base +
       r"/training_curves.png}")
     a(r"\caption{Training loss and validation metrics (seed 0)."
       r"}\label{fig:train}\end{figure}")
 
-    a(r"\begin{figure}[t]\centering")
-    a(r"\includegraphics[width=0.55\linewidth]{" + fig_base +
+    a(r"\begin{figure}[htbp]\centering")
+    a(r"\includegraphics[width=0.8\linewidth]{" + fig_base +
       r"/confusion.png}")
     a(r"\caption{Severity confusion matrix on the held-out test set."
       r"}\label{fig:cm}\end{figure}")
 
-    a(r"\begin{figure}[t]\centering")
-    a(r"\includegraphics[width=0.6\linewidth]{" + fig_base +
+    a(r"\begin{figure}[htbp]\centering")
+    a(r"\includegraphics[width=0.8\linewidth]{" + fig_base +
       r"/modality_importance.png}")
     a(r"\caption{Per-modality gradient $L_{2}$ norm of the predicted "
       r"severity logit, averaged over the test set."
       r"}\label{fig:imp}\end{figure}")
 
-    a(r"\begin{figure}[t]\centering")
-    a(r"\includegraphics[width=0.85\linewidth]{" + fig_base +
+    a(r"\begin{figure}[htbp]\centering")
+    a(r"\includegraphics[width=0.8\linewidth]{" + fig_base +
       r"/km_by_risk.png}")
     a(r"\caption{Kaplan-Meier survival curves stratified by predicted-"
       r"risk tertile.}\label{fig:km}\end{figure}")
 
-    a(r"\begin{figure}[t]\centering")
-    a(r"\includegraphics[width=0.55\linewidth]{" + fig_base +
+    a(r"\begin{figure}[htbp]\centering")
+    a(r"\includegraphics[width=0.8\linewidth]{" + fig_base +
       r"/calibration.png}")
     a(r"\caption{Reliability diagram for the top-class severity "
       r"probability.}\label{fig:cal}\end{figure}")
@@ -625,7 +634,7 @@ def build():
           "follow-up horizons (Table~\\ref{tab:brier}, "
           "Figure~\\ref{fig:brier}) and report the Integrated Brier Score "
           f"IBS = {brier['ibs']:.3f} over [1, 20] years.")
-        a(r"\begin{table}[t]\centering")
+        a(r"\begin{table}[htbp]\centering")
         a(r"\caption{Time-dependent Brier scores and IBS for the "
           r"attention-fusion model.}\label{tab:brier}")
         a(r"\small")
@@ -641,8 +650,8 @@ def build():
             + [f"{brier['ibs']:.3f}"]
         a(" & ".join(row) + r" \\")
         a(r"\bottomrule\end{tabular}\end{table}")
-        a(r"\begin{figure}[t]\centering")
-        a(r"\includegraphics[width=0.6\linewidth]"
+        a(r"\begin{figure}[htbp]\centering")
+        a(r"\includegraphics[width=0.8\linewidth]"
           r"{../experiments/results/survival_horizons/brier_curve.png}")
         a(r"\caption{Brier score over follow-up horizon with the IBS "
           r"annotated.}\label{fig:brier}\end{figure}")
@@ -656,7 +665,7 @@ def build():
           "are dropped. Overall AUROC is "
           f"{subgroup['overall']['auroc_ovr']:.3f} and overall C-index "
           f"is {subgroup['overall']['c_index']:.3f}.")
-        a(r"\begin{table}[t]\centering")
+        a(r"\begin{table}[htbp]\centering")
         a(r"\caption{Subgroup-stratified test metrics.}\label{tab:sg}")
         a(r"\small")
         a(r"\begin{tabular}{lcc}")
@@ -670,8 +679,8 @@ def build():
             ci_s = "--" if ci != ci else f"{ci:.3f}"
             a(f"{_esc(k)} & {au_s} & {ci_s} \\\\")
         a(r"\bottomrule\end{tabular}\end{table}")
-        a(r"\begin{figure}[t]\centering")
-        a(r"\includegraphics[width=0.95\linewidth]"
+        a(r"\begin{figure}[htbp]\centering")
+        a(r"\includegraphics[width=0.8\linewidth]"
           r"{../experiments/results/subgroups/figures/subgroup_bars.png}")
         a(r"\caption{Subgroup AUROC (left) and C-index (right). Dashed "
           r"vertical lines mark the overall test-set value."
@@ -685,7 +694,7 @@ def build():
             a("Per-class one-vs-rest AUROC localises the model's ranking "
               "ability for each severity tier "
               "(Table~\\ref{tab:pcauroc}, Fig.~\\ref{fig:pcroc}).")
-            a(r"\begin{table}[t]\centering")
+            a(r"\begin{table}[htbp]\centering")
             a(r"\caption{Per-class one-vs-rest AUROC.}\label{tab:pcauroc}")
             a(r"\small\begin{tabular}{lc}")
             a(r"\toprule Class & AUROC \\\midrule")
@@ -696,8 +705,8 @@ def build():
                              "auroc_class2": "severe"}[k]
                     a(f"{label} & {pc_auroc[k]:.3f} \\\\")
             a(r"\bottomrule\end{tabular}\end{table}")
-            a(r"\begin{figure}[t]\centering")
-            a(r"\includegraphics[width=0.6\linewidth]"
+            a(r"\begin{figure}[htbp]\centering")
+            a(r"\includegraphics[width=0.8\linewidth]"
               r"{../experiments/results/mmvlm4scd_default/clinical/figures/"
               r"per_class_roc.png}")
             a(r"\caption{Per-class one-vs-rest ROC curves on the held-out "
@@ -718,13 +727,13 @@ def build():
               "policies (Fig.~\\ref{fig:dca}). Sensitivity, specificity, "
               "PPV and NPV at three operating points are reported in "
               "Table~\\ref{tab:opp}.")
-            a(r"\begin{figure}[t]\centering")
-            a(r"\includegraphics[width=0.6\linewidth]"
+            a(r"\begin{figure}[htbp]\centering")
+            a(r"\includegraphics[width=0.8\linewidth]"
               r"{../experiments/results/mmvlm4scd_default/clinical/figures/"
               r"decision_curve.png}")
             a(r"\caption{Decision-curve analysis (Vickers \& Elkin)."
               r"}\label{fig:dca}\end{figure}")
-            a(r"\begin{table}[t]\centering")
+            a(r"\begin{table}[htbp]\centering")
             a(r"\caption{Sensitivity, specificity, PPV and NPV at three "
               r"operating thresholds for predicting severe disease."
               r"}\label{tab:opp}")
@@ -743,7 +752,7 @@ def build():
           "(Table~\\ref{tab:robust}, Fig.~\\ref{fig:robust}); this "
           "approximates the missing-at-random behaviour of real EHR "
           "data.")
-        a(r"\begin{table}[t]\centering")
+        a(r"\begin{table}[htbp]\centering")
         a(r"\caption{Test metrics under random per-sample modality "
           r"dropout (3 repeats per $p$).}\label{tab:robust}")
         a(r"\small\begin{tabular}{lcccc}")
@@ -754,8 +763,8 @@ def build():
                 a(f"{p} & {m['accuracy']:.3f} & {m['f1_macro']:.3f} & "
                   f"{m['auroc_ovr']:.3f} & {m['c_index']:.3f} \\\\")
         a(r"\bottomrule\end{tabular}\end{table}")
-        a(r"\begin{figure}[t]\centering")
-        a(r"\includegraphics[width=0.65\linewidth]"
+        a(r"\begin{figure}[htbp]\centering")
+        a(r"\includegraphics[width=0.8\linewidth]"
           r"{../experiments/results/mmvlm4scd_default/clinical/figures/"
           r"robustness.png}")
         a(r"\caption{Test AUROC and C-index versus modality-dropout "
@@ -768,7 +777,7 @@ def build():
         a(r"Across all subgroups (Table~\\ref{tab:sg}) we summarise "
           r"equity by the max-min gap on AUROC and C-index "
           f"(Table~\\ref{{tab:fair}}).")
-        a(r"\begin{table}[t]\centering")
+        a(r"\begin{table}[htbp]\centering")
         a(r"\caption{Subgroup fairness gap (max -- min) on AUROC and "
           r"C-index.}\label{tab:fair}")
         a(r"\small\begin{tabular}{lcccc}")
@@ -789,7 +798,7 @@ def build():
           "synthetic cohorts with seeds disjoint from training and "
           "evaluate the trained attention-fusion model on each "
           "(Table~\\ref{tab:ext}).")
-        a(r"\begin{table}[t]\centering")
+        a(r"\begin{table}[htbp]\centering")
         a(r"\caption{External-cohort simulation: each cohort is generated "
           r"with a different RNG seed.}\label{tab:ext}")
         a(r"\small\begin{tabular}{lcccc}")
@@ -800,6 +809,8 @@ def build():
               f"{m.get('auroc_ovr',float('nan')):.3f} & "
               f"{m.get('c_index',float('nan')):.3f} \\\\")
         a(r"\bottomrule\end{tabular}\end{table}")
+
+    a(r"\FloatBarrier")
 
     # 5. Discussion (restructured Q1) ---------------------------------
     a(r"\section{Discussion}")
@@ -828,7 +839,7 @@ def build():
       "specific signal than our synthetic SCD cohort exposes.")
 
     a(r"\subsection{Strengths and limitations}")
-    a("\\textbf{Strengths.} (i) The framework is fully open and "
+    a("\\textbf{Strengths.} (i) The framework is fully specified and "
       "reproducible end-to-end; (ii) reporting follows TRIPOD+AI "
       "(Table~S1); (iii) survival is evaluated with both the C-index "
       "and time-dependent Brier/IBS, providing a more complete view "
@@ -903,7 +914,7 @@ def build():
       "-- coordinated prospective evaluation with national programmes "
       "(NSCAEM India, Ministries of Health for Tanzania, Ghana, "
       "Nigeria) and an FDA SaMD / EU MDR submission only if Phase 4 "
-      "supports such a claim. The repository ships 25 loader stubs "
+      "supports such a claim. The codebase includes 25 loader stubs "
       "(eight for Sub-Saharan Africa, six for South Asia, and the "
       "remainder for global open foundations and US/UK reference "
       "cohorts), each raising a clear \\texttt{DataAccessError} until "
@@ -912,21 +923,22 @@ def build():
       "\\texttt{CareSettingTier} and \\texttt{HydroxyureaAccess} "
       "fields in the unified schema make geographic and care-context "
       "stratification mandatory in every downstream analysis.")
+    a(r"\FloatBarrier")
 
     # 6. Conclusion ---------------------------------------------------
     a(r"\section{Conclusion}")
-    a("Mmvlm4SCD is an open multimodal framework for SCD that jointly "
+    a("Mmvlm4SCD is a multimodal framework for SCD that jointly "
       "learns severity stratification and survival prediction. On a "
       "literature-calibrated synthetic benchmark, it attains "
       f"AUROC = {_fmt(auroc_m, auroc_s)} and "
       f"C-index = {_fmt(c_m, c_s)} across seeds, with clinical features "
       "dominating decision-time importance. Strong tabular baselines "
-      "remain competitive. The released code, registry of public SCD "
+      "remain competitive. The registry of public SCD "
       "sources, reproducible pipeline, and TRIPOD+AI-aligned reporting "
       "lower the barrier to extending these experiments to real, "
       "credentialed cohorts --- the next step in establishing whether "
       "multimodal fusion delivers a clinically meaningful uplift over "
-      "strong tabular baselines in SCD.")
+      "strong tabular baselines in SCD. Source code is available upon request.")
 
     # Declarations ----------------------------------------------------
     a(r"\section*{Declarations}\nolinenumbers")
@@ -941,25 +953,23 @@ def build():
     a(r"\noindent\textbf{Ethics approval and consent to participate.} "
       r"Not applicable. No human-subject data, identifiable specimens, "
       r"or animal experiments were involved; all empirical results are "
-      r"computed on a fully synthetic, parametric cohort generated by "
-      r"the released code.")
+      r"computed on a fully synthetic, parametric cohort generated by the "
+      r"methods described in Sec.~3.2.2.")
     a("")
     a(r"\noindent\textbf{Consent for publication.} Not applicable.")
     a("")
     a(r"\noindent\textbf{Data availability.} No real patient data were "
-      r"used. The synthetic-cohort generator and all analysis "
-      r"artefacts are released with the code at "
-      r"\url{https://github.com/koneke55/Mmvlm4SCD}. The public SCD "
+      r"used. The synthetic-cohort generator and analysis artefacts are "
+      r"described in Sec.~3.2.2 and Sec.~3.7; source code is available "
+      r"upon request. The public SCD "
       r"data sources catalogued in Table~\ref{tab:registry} can be "
       r"accessed through the corresponding dbGaP, GEO, MIMIC, UK "
       r"Biobank, NHLBI, ClinVar and gnomAD portals subject to each "
       r"source's access policy.")
     a("")
     a(r"\noindent\textbf{Code availability.} The Mmvlm4SCD framework "
-      r"(v0.1.1) is released under the MIT licence at "
-      r"\url{https://github.com/koneke55/Mmvlm4SCD} and archived with "
-      r"DOI on first release. A \texttt{CITATION.cff} file is included "
-      r"for citing the software.")
+      r"(v0.1.1) is documented in this manuscript and supplementary "
+      r"materials. Source code is available upon request.")
     a("")
     a(r"\noindent\textbf{Author contributions (CRediT).} S.K.: "
       r"Conceptualisation, Methodology, Software, Formal analysis, "
@@ -974,6 +984,7 @@ def build():
       r"sustaining the public data infrastructure that this work "
       r"would build upon at scale.")
     a(r"\linenumbers")
+    a(r"\FloatBarrier")
 
     # 7. Reproducibility (appendix-style) -----------------------------
     a(r"\section{Reproducibility}")
@@ -987,7 +998,7 @@ def build():
       "\\texttt{paper/build\\_paper.py} (ReportLab) or "
       "\\texttt{paper/build\\_tex.py} + pdflatex (this document). "
       "JSON artefacts in \\texttt{experiments/results/} are the single "
-      "source of truth. The repository ships 53 unit + integration "
+      "source of truth. The test suite comprises 53 unit and integration "
       "tests covering data, encoders, fusion, losses, training, "
       "evaluation, calibration, decision curves, robustness, fairness, "
       "and end-to-end smoke; \\texttt{pytest} is the entry point.")
@@ -1082,7 +1093,7 @@ def build():
          "NA (no clinical deployment)."),
         ("Implementation",
          "17.1 Code and software environment available.",
-         "MIT-licensed at github.com/koneke55/Mmvlm4SCD; Sec.~3.7, "
+         "Source code available upon request; Sec.~3.7, "
          "Reproducibility."),
         ("Discussion",
          "18.1 Limitations and generalisability discussed.",
@@ -1111,8 +1122,8 @@ def build():
     a(r"\end{longtable}")
 
     a(r"\subsection*{Figure S1. End-to-end pipeline}")
-    a(r"\begin{figure}[h]\centering")
-    a(r"\includegraphics[width=0.98\linewidth]"
+    a(r"\begin{figure}[htbp]\centering")
+    a(r"\includegraphics[width=0.8\linewidth]"
       r"{figures/graphical_abstract.png}")
     a(r"\caption{End-to-end pipeline (graphical abstract). Reproduced "
       r"here for offline review.}\label{fig:s1}\end{figure}")
